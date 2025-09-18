@@ -1,0 +1,24 @@
+{
+  "name": "ecogrid-backend",
+  "version": "1.0.0",
+  "description": "EcoGrid API (Express + MongoDB + Firebase Admin)",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js",
+    "seed:stops": "node seed/seedStops.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "firebase-admin": "^13.4.0",
+    "mongoose": "^8.17.1",
+    "pdf-lib": "^1.17.1",
+    "pdfkit": "^0.17.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
