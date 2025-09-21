@@ -1,69 +1,85 @@
-# React + TypeScript + Vite
+# Staff Management System - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the React frontend for the Staff Management System built with modern React hooks and functional components.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Responsive Design**: Mobile-friendly interface with green & white theme
+- **CRUD Operations**: Complete Create, Read, Update, Delete functionality
+- **Modern UI**: Clean, professional interface with status badges and action buttons
+- **Navigation**: React Router for seamless page navigation
+- **Form Validation**: Comprehensive form validation and error handling
+- **Real-time Updates**: Immediate UI updates after operations
 
-## Expanding the ESLint configuration
+## Components
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Core Components
+- **StaffList**: Displays all staff members in a table format with edit/delete actions
+- **AddStaff**: Comprehensive form to add new staff members
+- **EditStaff**: Form to update existing staff member information
+- **StaffDetails**: Detailed view of a specific staff member with calculated fields
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Features
+- **Status Badges**: Visual indicators for employment status
+- **Action Buttons**: Edit, Delete, and View actions for each staff member
+- **Responsive Tables**: Mobile-friendly table layout
+- **Form Validation**: Required field validation and error display
+- **Loading States**: Spinner and loading indicators
+- **Error Handling**: User-friendly error messages and retry options
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+## Setup
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+2. Start the development server:
+   ```bash
+   npm start
+   ```
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+3. Build for production:
+   ```bash
+   npm run build
+   ```
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Dependencies
+
+- **React 18**: Modern React with hooks
+- **React Router DOM**: Client-side routing
+- **Axios**: HTTP client for API calls
+- **CSS3**: Custom styling with green & white theme
+
+## API Integration
+
+The frontend communicates with the backend API at `http://localhost:5000` and includes:
+- Staff listing and search
+- Staff creation and updates
+- Staff deletion with confirmation
+- Detailed staff information display
+
+## Styling
+
+The application uses a custom CSS framework with:
+- **Green Theme**: Primary color #28a745 for EcoGrid branding
+- **White Backgrounds**: Clean, professional appearance
+- **Responsive Grid**: CSS Grid and Flexbox for layout
+- **Status Badges**: Color-coded employment status indicators
+- **Hover Effects**: Interactive button and table row effects
+
+## Browser Support
+
+- Chrome (latest)
+- Firefox (latest)
+- Safari (latest)
+- Edge (latest)
+
+## Development
+
+The application is built with modern React practices:
+- Functional components with hooks
+- Custom CSS for styling
+- Responsive design principles
+- Error boundary handling
+- Loading state management
