@@ -6,9 +6,8 @@ import { requireAuthMaybeDev } from "../utils/requireAuthMaybeDev.js";
 const router = express.Router();
 
 // Accepts JSON { stopId, action, photoUrl? }
-router.post("/", requireAuthMaybeDev, createPickup);
-router.post("/", createPickup);      // POST /api/pickups
-router.get("/", listPickups);        // GET  /api/pickups?date=YYYY-MM-DD
+router.post("/", requireAuthMaybeDev, createPickup); // POST /api/pickups
+router.get("/", requireAuthMaybeDev, listPickups);   // GET  /api/pickups?date=YYYY-MM-DD
 
 
 export default router;

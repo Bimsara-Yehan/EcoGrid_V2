@@ -95,7 +95,9 @@ export default function StopCard({
         <div>
           <div className="font-semibold">{stop.title}</div>
           {stop.subtitle && <div className="text-sm text-slate-500">{stop.subtitle}</div>}
-          {typeof stop.fill === "number" && <div className="text-xs text-slate-500 mt-1">Fill ~{stop.fill}%</div>}
+          {stop.kind === "bin" && typeof stop.fill === "number" && (
+            <div className="text-xs text-slate-500 mt-1">Fill ~{stop.fill}%</div>
+          )}
         </div>
         <div className="flex items-center gap-2">
           <span className={`text-xs px-2 py-1 rounded-full ${stop.kind === "bin" ? "bg-green-50 text-green-700" : "bg-slate-100 text-slate-700"}`}>

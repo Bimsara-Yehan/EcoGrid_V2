@@ -7,13 +7,16 @@
   "scripts": {
     "dev": "nodemon server.js",
     "start": "node server.js",
-    "seed:stops": "node seed/seedStops.js"
+    "seed:stops": "node seed/seedStops.js",
+    "seed:auth": "node seed/seedAuthSamples.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
     "firebase-admin": "^13.4.0",
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3",
     "mongoose": "^8.17.1",
     "pdf-lib": "^1.17.1",
     "pdfkit": "^0.17.1"

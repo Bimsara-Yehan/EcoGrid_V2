@@ -12,12 +12,16 @@ const driverStopSchema = new mongoose.Schema({
   seq: { type: Number, index: true },
   status: { type: String, enum: ["assigned", "collected", "skipped", "missed"], default: "assigned" },
   planId: { type: String },
-  planVersion: { type: Number }
+  planVersion: { type: Number },
+  // optional metadata, e.g., { binId, binDocId }
+  meta: { type: Object }
 }, { timestamps: true });
 
 driverStopSchema.index({ driverUid: 1, date: 1, seq: 1 });
 
 export default mongoose.model("DriverStop", driverStopSchema);
+
+
 
 
 

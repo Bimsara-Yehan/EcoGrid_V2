@@ -1,5 +1,6 @@
 // frontend/src/services/reports.ts
 import { API_BASE } from "../lib/env";
+import { getToken } from "./auth";
 
 export type ReportActivity = {
   id: string;
@@ -24,13 +25,15 @@ export type DailyReportDTO = {
 };
 
 export async function fetchDailyReport(date: string): Promise<DailyReportDTO> {
-  const r = await fetch(`${API_BASE}/api/reports/daily?date=${date}`);
+  const token = getToken();
+  const r = await fetch(`${API_BASE}/api/reports/daily?date=${date}`, { headers: token ? { Authorization: `Bearer ${token}` } : undefined });
   if (!r.ok) throw new Error(`HTTP ${r.status}`);
   return r.json();
 }
 
 export async function downloadDailyReportPdf(date: string) {
-  const r = await fetch(`${API_BASE}/api/reports/daily.pdf?date=${date}`);
+  const token = getToken();
+  const r = await fetch(`${API_BASE}/api/reports/daily.pdf?date=${date}`, { headers: token ? { Authorization: `Bearer ${token}` } : undefined });
   if (!r.ok) throw new Error(`HTTP ${r.status}`);
   const blob = await r.blob();
   const url = URL.createObjectURL(blob);

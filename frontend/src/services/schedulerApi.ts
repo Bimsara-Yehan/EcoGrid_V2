@@ -1,4 +1,5 @@
 import { API_BASE } from "../lib/env";
+import { getToken } from "./auth";
 
 export type PublishStop = {
   kind: "household" | "bin" | "incident";
@@ -23,9 +24,10 @@ export type PublishPayload = {
 };
 
 export async function publishPlan(payload: PublishPayload) {
+  const token = getToken();
   const r = await fetch(`${API_BASE}/api/scheduler/publish`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
     body: JSON.stringify(payload)
   });
   if (!r.ok) throw new Error(`HTTP ${r.status}`);

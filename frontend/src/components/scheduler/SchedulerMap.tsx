@@ -212,14 +212,27 @@ export default function SchedulerMap({ depots, facilities, customers, bins, inci
 
         {show.bins && (
           <div className="leaflet-pane pane-bins">
-            {bins.map(b => (
-              <CircleMarker key={b.id} center={b.coords} radius={7} pathOptions={{ color: b.fillLevel >= 75 ? "#dc2626" : b.fillLevel >= 50 ? "#f59e0b" : "#16a34a", fillOpacity: 0.9 }}>
-                <Popup>
-                  <div className="font-semibold">{b.name}</div>
-                  <div className="text-xs text-slate-600">Fill: {b.fillLevel}%</div>
-                </Popup>
-              </CircleMarker>
-            ))}
+            {bins.map(b => {
+              const color = b.fillLevel >= 75 ? "#dc2626" : b.fillLevel >= 50 ? "#f59e0b" : "#16a34a";
+              const last = b.measuredAt ? new Date(b.measuredAt) : null;
+              const ageMin = last ? Math.floor((Date.now() - last.getTime())/60000) : null;
+              const stale = ageMin != null && ageMin > 60; // over 60 min old
+              return (
+                <CircleMarker key={b.id} center={b.coords} radius={7} pathOptions={{ color: stale ? "#64748b" : color, fillOpacity: 0.9 }} eventHandlers={{ click: () => {
+                  // If a focused driver is set, emit a synthetic onMarkerClick to add to plan upstream
+                  // We don't have direct access to planning state here; UI will handle onMarkerClick
+                  onMarkerClick && onMarkerClick(focusedDriverId || "", b.id);
+                }}}>
+                  <Popup>
+                    <div className="font-semibold">{b.name}</div>
+                    <div className="text-xs text-slate-600">Fill: {b.fillLevel}%</div>
+                    {b.measuredAt && <div className="text-xs text-slate-500">Updated: {new Date(b.measuredAt).toLocaleString()}</div>}
+                    {b.needsPickup && <div className="mt-1 text-xs font-medium text-red-600">Needs pickup</div>}
+                    {stale && <div className="text-xs text-amber-600">Data stale</div>}
+                  </Popup>
+                </CircleMarker>
+              );
+            })}
           </div>
         )}
 
