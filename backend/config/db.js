@@ -6,7 +6,8 @@ export async function connectDB(retries = 5) {
 
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
-      await mongoose.connect(uri, { dbName: "ecogrid" });
+      const dbName = process.env.DB_NAME || "ecogrid";
+      await mongoose.connect(uri, { dbName });
       console.log("✅ Mongo connected");
       return;
     } catch (err) {

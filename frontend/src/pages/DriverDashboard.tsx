@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { logout } from "../services/auth";
 import Layout from "../components/Layout";
 import StatCard from "../components/StatCard";
 import ProgressBar from "../components/ProgressBar";
@@ -86,6 +87,13 @@ export default function DriverDashboard() {
           className="ml-auto px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 font-medium"
         >
           Refresh
+        </button>
+        <button
+          type="button"
+          onClick={() => { logout(); navigate("/login", { replace: true }); }}
+          className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 font-medium"
+        >
+          Logout
         </button>
       </div>
 

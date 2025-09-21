@@ -1,8 +1,12 @@
 import { API_BASE } from "../lib/env";
+import { getToken } from "./auth";
 import type { Stop } from "../components/StopCard";
 
 export async function fetchStops(date: string): Promise<Stop[]> {
-  const res = await fetch(`${API_BASE}/api/stops?date=${date}`);
+  const token = getToken();
+  const res = await fetch(`${API_BASE}/api/stops?date=${date}`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+  });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const raw = await res.json();
   return (raw as any[]).map(s => ({

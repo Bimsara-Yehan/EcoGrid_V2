@@ -8,11 +8,14 @@ import pickupsRoutes from "./routes/pickupsRoutes.js";
 import dropoffsRoutes from "./routes/dropoffsRoutes.js";
 import schedulerRoutes from "./routes/schedulerRoutes.js";
 import schedulerReadRoutes from "./routes/schedulerReadRoutes.js";
+import iotRoutes from "./routes/iotRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
 import { seedSchedulerData } from "./seed/seedSchedulerData.js";
 
 
 
 dotenv.config();
+
 
 const app = express();
 app.use(cors({ origin: true, credentials: true }));
@@ -28,6 +31,8 @@ app.use((req, res, next) => {
 
 app.get("/api/health", (req, res) => res.json({ ok: true }));
 
+app.use("/api/auth", authRoutes);
+
 app.use("/api/stops", stopsRoutes);
 
 app.use("/api/reports", reportsRoutes);
@@ -40,6 +45,7 @@ app.use("/api/dropoffs", dropoffsRoutes);
 
 app.use("/api/scheduler", schedulerRoutes);
 app.use("/api/scheduler", schedulerReadRoutes);
+app.use("/api/iot", iotRoutes);
 
 
 const PORT = process.env.PORT || 5000;

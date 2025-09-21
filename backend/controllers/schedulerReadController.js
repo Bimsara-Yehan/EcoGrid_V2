@@ -70,8 +70,17 @@ export async function getBins(req, res) {
     const candidateOnly = String(req.query.candidateOnly || "0") === "1";
     const col = mongoose.connection.collection("publicbins");
     const docs = await col.find({}).limit(2000).toArray().catch(() => []);
-    let out = docs.map(d => ({ id: String(d._id), name: d.name || "Bin", coords: toLatLng(d.geo), fillLevel: d.fillLevel ?? 0, measuredAt: d.measuredAt || null })).filter(x => x.coords);
-    if (candidateOnly) out = out.filter(b => (b.fillLevel || 0) >= 75);
+    let out = docs
+      .map(d => ({
+        id: String(d._id),
+        name: d.name || "Bin",
+        coords: toLatLng(d.geo),
+        fillLevel: d?.status?.fillPct ?? d.fillLevel ?? 0,
+        measuredAt: d?.status?.ts ?? d.measuredAt ?? null,
+        needsPickup: !!(d?.status?.needsPickup)
+      }))
+      .filter(x => x.coords);
+    if (candidateOnly) out = out.filter(b => b.needsPickup === true);
     res.json(out);
   } catch (e) {
     console.error(e);

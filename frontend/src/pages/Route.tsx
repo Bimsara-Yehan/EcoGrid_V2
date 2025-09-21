@@ -54,14 +54,24 @@ export default function RoutePage() {
     setDetails(stops.find(x => x.id === id) || null);
   }
 
+  async function refreshStops() {
+    try {
+      const date = new Date().toISOString().slice(0, 10);
+      const s = await fetchStops(date);
+      setStops(s);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
   function handleAfterAction(id: string) {
+    // Optimistic: refresh stops to pull latest fill/status
+    refreshStops();
     // Move focus to next stop and scroll it into view
     const idx = stops.findIndex(s => s.id === id);
     if (idx >= 0 && idx + 1 < stops.length) {
       const nextId = stops[idx + 1].id;
       setSelectedId(nextId);
-      // Scroll into view by querying the next card (keyed by order)
-      // Simple approach: scroll container to rough position
       if (asideRef.current) {
         const approxHeight = 120; // average card height
         asideRef.current.scrollTo({ top: Math.max(0, (idx + 1) * approxHeight - 60), behavior: "smooth" });

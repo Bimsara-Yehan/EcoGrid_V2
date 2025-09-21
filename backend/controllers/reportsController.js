@@ -201,8 +201,8 @@ export async function getDailyReportPdf(req, res) {
       doc.moveTo(tableLeft, headerLineY).lineTo(tableRight, headerLineY).strokeColor("#cbd5e1").lineWidth(1).stroke();
       doc.font("Helvetica").fillColor("#0f172a").fontSize(12);
 
-      if (pickups.length === 0) {
-        doc.moveDown().text("No activity.");
+    if (pickups.length === 0) {
+      doc.moveDown().text("No activity.");
         return;
       }
 
@@ -269,8 +269,8 @@ export async function getDailyReportPdf(req, res) {
       doc.moveTo(tableLeft, headerLineY).lineTo(tableRight, headerLineY).strokeColor("#cbd5e1").lineWidth(1).stroke();
       doc.font("Helvetica").fillColor("#0f172a").fontSize(12);
 
-      if (dropoffs.length === 0) {
-        doc.moveDown().text("No drop-offs recorded.");
+    if (dropoffs.length === 0) {
+      doc.moveDown().text("No drop-offs recorded.");
         return;
       }
 
