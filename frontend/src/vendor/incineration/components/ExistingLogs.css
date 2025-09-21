@@ -1,0 +1,661 @@
+.existing-logs {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid #f0f4e8;
+}
+
+.page-header h2 {
+  color: #262b12;
+  margin-bottom: 0.5rem;
+  font-size: 2.2rem;
+  font-weight: 700;
+}
+
+.page-description {
+  color: #666;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.alert {
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+  border-left: 4px solid;
+}
+
+.alert-error {
+  background-color: #ffebee;
+  color: #c62828;
+  border-left-color: #c62828;
+}
+
+.alert-info {
+  background-color: #e3f2fd;
+  color: #1565c0;
+  border-left-color: #1565c0;
+  text-align: center;
+  font-style: italic;
+}
+
+.controls-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.filters {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.filters label {
+  font-weight: 600;
+  color: #262b12;
+  font-size: 0.95rem;
+}
+
+.stats {
+  color: #666;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.category-filter {
+  padding: 0.5rem 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 1rem;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.category-filter:focus {
+  outline: none;
+  border-color: #88c932;
+}
+
+.table-container {
+  overflow-x: auto;
+  margin-bottom: 1.5rem;
+}
+
+.log-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+}
+
+.log-table th,
+.log-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.log-table th {
+  background: #88c932;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.sortable-header {
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.3s ease;
+}
+
+.sortable-header:hover {
+  background: #6fa425;
+}
+
+.log-table .log-row:nth-child(even) {
+  background: #f9f9f9;
+}
+
+.log-row:hover {
+  background: #f0f0f0;
+}
+
+.status-badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.status-pending {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.status-processed {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status-disposed {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.log-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.action-btn {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  min-height: 44px; /* Touch-friendly minimum height */
+  min-width: 60px;
+}
+
+.edit-btn {
+  background-color: #17a2b8;
+  color: white;
+}
+
+.edit-btn:hover {
+  background-color: #138496;
+}
+
+.delete-btn {
+  background-color: #dc3545;
+  color: white;
+}
+
+.delete-btn:hover {
+  background-color: #c82333;
+}
+
+.no-data {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  padding: 2rem;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.pagination-btn {
+  padding: 0.5rem 1rem;
+  background-color: #88c932;
+  color: #262b12;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background-color: #6fa425;
+}
+
+.pagination-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.page-info {
+  font-weight: 500;
+  color: #666;
+}
+
+.navigation-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e0e0e0;
+}
+
+.back-button,
+.reports-button {
+  padding: 0.75rem 1.5rem;
+  background-color: #88c932;
+  color: #262b12;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.back-button:hover,
+.reports-button:hover {
+  background-color: #6fa425;
+}
+
+.reports-button {
+  background-color: #4caf50;
+  color: white;
+}
+
+.reports-button:hover {
+  background-color: #388e3c;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  width: 90%;
+}
+
+.modal-content h3 {
+  margin-bottom: 1rem;
+  color: #262b12;
+}
+
+.modal-content p {
+  margin-bottom: 1.5rem;
+  color: #666;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.confirm-btn,
+.cancel-btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.confirm-btn {
+  background-color: #dc3545;
+  color: white;
+}
+
+.confirm-btn:hover {
+  background-color: #c82333;
+}
+
+.cancel-btn {
+  background-color: #6c757d;
+  color: white;
+}
+
+.cancel-btn:hover {
+  background-color: #5a6268;
+}
+
+/* Large tablets and small desktops */
+@media (max-width: 1024px) {
+  .existing-logs {
+    padding: 1.8rem;
+    margin: 1rem auto;
+  }
+  
+  .page-header h2 {
+    font-size: 2rem;
+  }
+  
+  .controls-section {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  
+  .log-table th,
+  .log-table td {
+    padding: 0.7rem 0.5rem;
+  }
+  
+  .action-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* Tablets */
+@media (max-width: 768px) {
+  .existing-logs {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+  
+  .page-header h2 {
+    font-size: 1.8rem;
+  }
+  
+  .controls-section {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+  
+  .filters {
+    justify-content: center;
+  }
+  
+  .stats {
+    text-align: center;
+  }
+  
+  .log-table {
+    font-size: 0.85rem;
+  }
+  
+  .log-table th,
+  .log-table td {
+    padding: 0.6rem 0.4rem;
+  }
+  
+  .log-actions {
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  
+  .action-btn {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.8rem;
+    min-width: 80px;
+  }
+  
+  .navigation-actions {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  
+  .back-button,
+  .reports-button {
+    width: 100%;
+    max-width: 300px;
+  }
+  
+  .modal-content {
+    margin: 1rem;
+    padding: 1.5rem;
+    width: 90%;
+  }
+  
+  .modal-actions {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+  
+  .confirm-btn,
+  .cancel-btn {
+    width: 100%;
+  }
+}
+
+/* Large mobile devices */
+@media (max-width: 600px) {
+  .existing-logs {
+    padding: 1rem;
+    margin: 0.5rem;
+  }
+  
+  .page-header h2 {
+    font-size: 1.6rem;
+  }
+  
+  .page-description {
+    font-size: 1rem;
+  }
+  
+  .controls-section {
+    padding: 0.8rem;
+  }
+  
+  .filters {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  
+  .filters label {
+    font-size: 0.9rem;
+  }
+  
+  .category-filter {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.9rem;
+  }
+  
+  .stats {
+    font-size: 0.85rem;
+  }
+  
+  .log-table {
+    font-size: 0.8rem;
+  }
+  
+  .log-table th,
+  .log-table td {
+    padding: 0.5rem 0.3rem;
+  }
+  
+  .log-table th {
+    font-size: 0.8rem;
+  }
+  
+  .status-badge {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.4rem;
+  }
+  
+  .log-actions {
+    flex-direction: row;
+    justify-content: center;
+    gap: 0.4rem;
+  }
+  
+  .action-btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.75rem;
+    min-width: 70px;
+  }
+  
+  .pagination {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+  
+  .pagination-btn {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+  }
+  
+  .page-info {
+    font-size: 0.9rem;
+  }
+  
+  .modal-content {
+    margin: 0.5rem;
+    padding: 1.2rem;
+    width: 95%;
+  }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+  .existing-logs {
+    padding: 0.8rem;
+    margin: 0.3rem;
+  }
+  
+  .page-header h2 {
+    font-size: 1.4rem;
+  }
+  
+  .page-description {
+    font-size: 0.9rem;
+  }
+  
+  .controls-section {
+    padding: 0.6rem;
+  }
+  
+  .filters label {
+    font-size: 0.85rem;
+  }
+  
+  .category-filter {
+    padding: 0.5rem 0.6rem;
+    font-size: 0.85rem;
+  }
+  
+  .stats {
+    font-size: 0.8rem;
+  }
+  
+  .log-table {
+    font-size: 0.75rem;
+  }
+  
+  .log-table th,
+  .log-table td {
+    padding: 0.4rem 0.2rem;
+  }
+  
+  .log-table th {
+    font-size: 0.75rem;
+  }
+  
+  .status-badge {
+    font-size: 0.7rem;
+    padding: 0.15rem 0.3rem;
+  }
+  
+  .log-actions {
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  
+  .action-btn {
+    padding: 0.5rem 0.6rem;
+    font-size: 0.7rem;
+    min-width: 60px;
+  }
+  
+  .pagination-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+  }
+  
+  .page-info {
+    font-size: 0.8rem;
+  }
+  
+  .back-button,
+  .reports-button {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+  }
+  
+  .modal-content {
+    margin: 0.3rem;
+    padding: 1rem;
+    width: 98%;
+  }
+  
+  .modal-content h3 {
+    font-size: 1.1rem;
+  }
+  
+  .modal-content p {
+    font-size: 0.9rem;
+  }
+  
+  .confirm-btn,
+  .cancel-btn {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 320px) {
+  .existing-logs {
+    padding: 0.5rem;
+    margin: 0.2rem;
+  }
+  
+  .page-header h2 {
+    font-size: 1.2rem;
+  }
+  
+  .log-table {
+    font-size: 0.7rem;
+  }
+  
+  .log-table th,
+  .log-table td {
+    padding: 0.3rem 0.1rem;
+  }
+  
+  .action-btn {
+    padding: 0.4rem 0.5rem;
+    font-size: 0.65rem;
+    min-width: 50px;
+  }
+  
+  .modal-content {
+    padding: 0.8rem;
+  }
+}
