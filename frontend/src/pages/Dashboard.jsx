@@ -208,7 +208,7 @@ export default function Dashboard() {
             <table className="table" style={{ width:'100%', borderCollapse:'collapse' }}>
               <thead>
                 <tr style={{ color:'#4a6b39', textAlign:'left' }}>
-                  {(Array.isArray(['Zone Name','Zone Type','Created Date','Customers Count','Actions']) ? ['Zone Name','Zone Type','Created Date','Customers Count','Actions'] : []).map(h=> (
+                  {(Array.isArray(['Zone Name','Zone Type','Created Date','Customers Count','Actions']) ? ['Zone Name','Zone Type','Created Date','Customers Count'] : []).map(h=> (
                     <th key={h} style={{ padding:'10px 12px', borderBottom:'1px solid #e5f3ce' }}>{h}</th>
                   ))}
                 </tr>
@@ -220,10 +220,7 @@ export default function Dashboard() {
                     <td style={{ padding:'10px 12px', borderBottom:'1px solid #e5f3ce', color:COLORS[z.type] }}>{z.type}</td>
                     <td style={{ padding:'10px 12px', borderBottom:'1px solid #e5f3ce' }}>{z.createdAt}</td>
                     <td style={{ padding:'10px 12px', borderBottom:'1px solid #e5f3ce' }}>{z.customers}</td>
-                    <td style={{ padding:'10px 12px', borderBottom:'1px solid #e5f3ce' }}>
-                      <button className="btn" style={{ marginRight:8 }}>Edit</button>
-                      <button className="btn" style={{ background:'#dc2626', color:'white' }}>Delete</button>
-                    </td>
+                    
                   </tr>
                 ))}
               </tbody>
@@ -236,7 +233,7 @@ export default function Dashboard() {
             <table className="table" style={{ width:'100%', borderCollapse:'collapse' }}>
               <thead>
                 <tr style={{ color:'#4a6b39', textAlign:'left' }}>
-                  {(Array.isArray(['Plan Name','Frequency','Price (Urban, Suburban, Rural)','Active Users','Actions']) ? ['Plan Name','Frequency','Price (Urban, Suburban, Rural)','Active Users','Actions'] : []).map(h=> (
+                  {(Array.isArray(['Plan Name','Frequency','Price (Urban, Suburban, Rural)','Active Users']) ? ['Plan Name','Frequency','Price (Urban, Suburban, Rural)','Active Users'] : []).map(h=> (
                     <th key={h} style={{ padding:'10px 12px', borderBottom:'1px solid #e5f3ce' }}>{h}</th>
                   ))}
                 </tr>
@@ -252,10 +249,6 @@ export default function Dashboard() {
                       <span style={{ color:COLORS.Rural }}>${p.price?.Rural ?? '-'}</span>
                     </td>
                     <td style={{ padding:'10px 12px', borderBottom:'1px solid #e5f3ce' }}>{p.users ?? '-'}</td>
-                    <td style={{ padding:'10px 12px', borderBottom:'1px solid #e5f3ce' }}>
-                      <button className="btn" style={{ marginRight:8 }}>Edit</button>
-                      <button className="btn" style={{ background:'#dc2626', color:'white' }}>Delete</button>
-                    </td>
                   </tr>
                 ))}
               </tbody>
