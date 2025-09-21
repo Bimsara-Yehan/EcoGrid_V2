@@ -45,3 +45,11 @@ frontend/dist/
 backend/dist/
 backend/.env
 
+
+# Python virtual environments
+backend/vendor/incineration/ai-service/.venv*/
+
+# Model artifacts / data (prefer Git LFS instead)
+backend/vendor/**/models/*.joblib
+backend/vendor/**/models/*.pkl
+backend/vendor/**/data/*.csv
