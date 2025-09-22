@@ -1,0 +1,148 @@
+#root {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 24px 32px;
+  box-sizing: border-box;
+}
+
+@media (min-width: 1400px) {
+  #root {
+    padding: 24px 40px;
+  }
+}
+
+body {
+  background: #88c932; /* Waste management green */
+  color: #0f2612; /* Deep green for readable text */
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.brand {
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.nav {
+  display: flex;
+  gap: 16px;
+}
+
+.nav a {
+  color: #0f2612;
+  text-decoration: none;
+  padding: 8px 10px;
+  border-radius: 8px;
+}
+
+.nav a:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid #c9eaa4; /* soft green border */
+  border-radius: 14px;
+  padding: 24px;
+  color: #102613;
+}
+
+.btn {
+  background: #2f6f1b; /* dark green */
+  color: #ffffff;
+  border: 1px solid #275c16;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: #285f18;
+}
+
+.btn-primary {
+  background: #5fa216; /* stronger green accent */
+  border-color: #5fa216;
+}
+
+.btn-primary:hover {
+  background: #528d14;
+}
+
+.form {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.form input,
+.form select,
+.form textarea {
+  background: #ffffff;
+  color: #102613;
+  border: 1px solid #b7df83;
+  padding: 8px 10px;
+  border-radius: 8px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #c9eaa4;
+}
+
+.muted {
+  color: #4a6b39;
+}
+
+/* Responsive utils */
+.grid-2-responsive {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 1200px) {
+  .grid-2-responsive {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .grid-2-responsive {
+    grid-template-columns: 1fr;
+  }
+}
+
+.map-mini {
+  height: 360px;
+}
+
+@media (max-width: 1200px) {
+  .map-mini { height: 320px; }
+}
+@media (max-width: 900px) {
+  .map-mini { height: 260px; }
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}

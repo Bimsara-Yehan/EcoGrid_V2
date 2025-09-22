@@ -1,0 +1,27 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Bimsara-Yehan/waste-management.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Bimsara-Yehan/waste-management/issues"
+  },
+  "homepage": "https://github.com/Bimsara-Yehan/waste-management#readme",
+  "description": "",
+  "dependencies": {
+    "dotenv": "^16.6.1",
+    "express": "^5.1.0",
+    "mongoose": "^8.18.1",
+    "nodemon": "^3.1.10",
+    "recharts": "^3.2.1"
+  }
+}
