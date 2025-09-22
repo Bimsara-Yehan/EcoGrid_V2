@@ -15,26 +15,13 @@ const LeaveRequestList = () => {
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
-  const [showDownloadDropdown, setShowDownloadDropdown] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchLeaveRequests();
   }, []);
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (showDownloadDropdown && !event.target.closest('.download-dropdown')) {
-        setShowDownloadDropdown(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [showDownloadDropdown]);
+  // removed dropdown
 
   useEffect(() => {
     // Filter leave requests based on search term and status
@@ -357,36 +344,6 @@ const LeaveRequestList = () => {
                 <FaArrowLeft />
                 <span>Dashboard</span>
               </button>
-              
-              {/* Download Dropdown */}
-              <div className="download-dropdown">
-              <button 
-                className="download-btn"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  console.log('Download button clicked');
-                  setShowDownloadDropdown(!showDownloadDropdown);
-                }}
-                type="button"
-              >
-                <FaDownload />
-                <span>Download</span>
-              </button>
-                {showDownloadDropdown && (
-                  <div className="download-menu">
-                    <button onClick={downloadAsPDF} className="download-option">
-                      <FaFilePdf />
-                      <span>Download as PDF</span>
-                    </button>
-                    <button onClick={downloadAsExcel} className="download-option">
-                      <FaFileExcel />
-                      <span>Download as Excel</span>
-                    </button>
-                  </div>
-                )}
-              </div>
-              
               <button 
                 className="add-request-btn"
                 onClick={(e) => {

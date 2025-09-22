@@ -15,26 +15,14 @@ const LeaveRequestList = () => {
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
-  const [showDownloadDropdown, setShowDownloadDropdown] = useState(false);
+  // removed page-level download dropdown
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchLeaveRequests();
   }, []);
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (showDownloadDropdown && !event.target.closest('.download-dropdown')) {
-        setShowDownloadDropdown(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [showDownloadDropdown]);
+  // removed dropdown listeners
 
   useEffect(() => {
     // Filter leave requests based on search term and status
@@ -231,7 +219,6 @@ const LeaveRequestList = () => {
       
       // Save the PDF
       doc.save(`leave-requests-${new Date().toISOString().split('T')[0]}.pdf`);
-      setShowDownloadDropdown(false);
     } catch (error) {
       console.error('Error generating PDF:', error);
       alert('Error generating PDF. Please try again.');
@@ -266,7 +253,51 @@ const LeaveRequestList = () => {
     
     // Save the file
     saveAs(data, `leave-requests-${new Date().toISOString().split('T')[0]}.xlsx`);
-    setShowDownloadDropdown(false);
+  };
+
+  // Download a single leave request as PDF
+  const downloadSingleRequestAsPDF = (request) => {
+    try {
+      const doc = new jsPDF();
+      doc.setFontSize(16);
+      doc.text('EcoGrid - Leave Request', 14, 18);
+      doc.setFontSize(10);
+      doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 26);
+
+      doc.setDrawColor(16, 185, 129);
+      doc.line(14, 30, 196, 30);
+
+      const lines = [
+        [`Request ID`, request.leaveRequestID || 'N/A'],
+        [`Staff Name`, request.staffID?.name || 'N/A'],
+        [`Role`, request.staffID?.role || 'N/A'],
+        [`Leave Type`, request.leaveType || 'N/A'],
+        [`Start Date`, new Date(request.startDate).toLocaleDateString()],
+        [`End Date`, new Date(request.endDate).toLocaleDateString()],
+        [`Total Days`, `${request.totalDays || 'N/A'}`],
+        [`Status`, request.status || 'N/A'],
+        [`Reason`, request.reason || 'N/A'],
+        [`Requested Date`, new Date(request.requestedDate).toLocaleDateString()],
+        [`Approved/Rejected Date`, request.approvedRejectedDate ? new Date(request.approvedRejectedDate).toLocaleDateString() : 'N/A'],
+        [`Admin Comments`, request.adminComments || 'N/A']
+      ];
+
+      let y = 38;
+      doc.setFontSize(12);
+      lines.forEach(([label, value]) => {
+        doc.setFont(undefined, 'bold');
+        doc.text(`${label}:`, 14, y);
+        doc.setFont(undefined, 'normal');
+        doc.text(String(value), 60, y);
+        y += 8;
+      });
+
+      const filename = `${request.leaveRequestID || 'leave-request'}-${new Date().toISOString().split('T')[0]}.pdf`;
+      doc.save(filename);
+    } catch (err) {
+      console.error('Error generating single request PDF:', err);
+      alert('Error generating PDF. Please try again.');
+    }
   };
 
   if (loading) {
@@ -353,40 +384,10 @@ const LeaveRequestList = () => {
               )}
             </div>
             <div className="header-actions">
-              <button className="back-btn" onClick={() => navigate('/')}>
+              <button className="back-btn" onClick={() => navigate('/') }>
                 <FaArrowLeft />
                 <span>Dashboard</span>
               </button>
-              
-              {/* Download Dropdown */}
-              <div className="download-dropdown">
-              <button 
-                className="download-btn"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  console.log('Download button clicked');
-                  setShowDownloadDropdown(!showDownloadDropdown);
-                }}
-                type="button"
-              >
-                <FaDownload />
-                <span>Download</span>
-              </button>
-                {showDownloadDropdown && (
-                  <div className="download-menu">
-                    <button onClick={downloadAsPDF} className="download-option">
-                      <FaFilePdf />
-                      <span>Download as PDF</span>
-                    </button>
-                    <button onClick={downloadAsExcel} className="download-option">
-                      <FaFileExcel />
-                      <span>Download as Excel</span>
-                    </button>
-                  </div>
-                )}
-              </div>
-              
               <button 
                 className="add-request-btn"
                 onClick={(e) => {
@@ -552,6 +553,13 @@ const LeaveRequestList = () => {
                       <FaEye />
                       <span>View</span>
                     </Link>
+                    <button
+                      onClick={() => downloadSingleRequestAsPDF(request)}
+                      className="action-btn"
+                    >
+                      <FaDownload />
+                      <span>Download</span>
+                    </button>
                     {request.status?.toLowerCase() === 'pending' && (
                       <>
                         <button

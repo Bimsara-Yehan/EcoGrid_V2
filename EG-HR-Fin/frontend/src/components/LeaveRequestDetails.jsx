@@ -21,6 +21,7 @@ import {
   FaTimesCircle,
   FaHourglassHalf
 } from 'react-icons/fa';
+import jsPDF from 'jspdf';
 import './LeaveRequestDetails.css';
 
 const LeaveRequestDetails = () => {
@@ -45,6 +46,51 @@ const LeaveRequestDetails = () => {
       console.error('Error fetching leave request details:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const downloadThisRequestAsPDF = () => {
+    if (!leaveRequest) return;
+    try {
+      const doc = new jsPDF();
+      doc.setFontSize(16);
+      doc.text('EcoGrid - Leave Request', 14, 18);
+      doc.setFontSize(10);
+      doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 26);
+
+      doc.setDrawColor(16, 185, 129);
+      doc.line(14, 30, 196, 30);
+
+      const lines = [
+        [`Request ID`, leaveRequest.leaveRequestID || 'N/A'],
+        [`Staff Name`, leaveRequest.staffID?.name || 'N/A'],
+        [`Role`, leaveRequest.staffID?.role || 'N/A'],
+        [`Leave Type`, leaveRequest.leaveType || 'N/A'],
+        [`Start Date`, new Date(leaveRequest.startDate).toLocaleDateString()],
+        [`End Date`, new Date(leaveRequest.endDate).toLocaleDateString()],
+        [`Total Days`, `${leaveRequest.totalDays || 'N/A'}`],
+        [`Status`, leaveRequest.status || 'N/A'],
+        [`Reason`, leaveRequest.reason || 'N/A'],
+        [`Requested Date`, new Date(leaveRequest.requestedDate).toLocaleDateString()],
+        [`Approved/Rejected Date`, leaveRequest.approvedRejectedDate ? new Date(leaveRequest.approvedRejectedDate).toLocaleDateString() : 'N/A'],
+        [`Admin Comments`, leaveRequest.adminComments || 'N/A']
+      ];
+
+      let y = 38;
+      doc.setFontSize(12);
+      lines.forEach(([label, value]) => {
+        doc.setFont(undefined, 'bold');
+        doc.text(`${label}:`, 14, y);
+        doc.setFont(undefined, 'normal');
+        doc.text(String(value), 60, y);
+        y += 8;
+      });
+
+      const filename = `${leaveRequest.leaveRequestID || 'leave-request'}-${new Date().toISOString().split('T')[0]}.pdf`;
+      doc.save(filename);
+    } catch (err) {
+      console.error('Error generating single request PDF:', err);
+      alert('Error generating PDF. Please try again.');
     }
   };
 
@@ -181,10 +227,14 @@ const LeaveRequestDetails = () => {
             </div>
           </div>
           <div className="header-actions">
-            <Link to="/leave-requests" className="back-btn">
+            <button className="back-btn" onClick={() => navigate('/leave-requests')}>
               <FaArrowLeft />
               <span>Back to Leave Requests</span>
-            </Link>
+            </button>
+            <button className="back-btn" onClick={downloadThisRequestAsPDF}>
+              <FaFileAlt />
+              <span>Download</span>
+            </button>
           </div>
         </div>
 

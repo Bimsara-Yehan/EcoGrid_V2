@@ -65,8 +65,8 @@ const Dashboard = () => {
         console.log('Leave requests API response:', leaveData);
         const leaveList = leaveData.success ? leaveData.data : leaveData;
         console.log('Leave list:', leaveList);
-        const pendingLeaves = leaveList.filter(l => l.status === 'Pending').length;
-        const approvedLeaves = leaveList.filter(l => l.status === 'Approved').length;
+        const pendingLeaves = leaveList.filter(l => (l.status || '').toLowerCase() === 'pending').length;
+        const approvedLeaves = leaveList.filter(l => (l.status || '').toLowerCase() === 'approved').length;
         console.log('Pending leaves:', pendingLeaves, 'Approved leaves:', approvedLeaves);
 
         // Fetch payments for monthly stats
@@ -88,7 +88,7 @@ const Dashboard = () => {
           .reduce((sum, p) => sum + (p.totalAmount || p.calc?.computedGross || 0), 0);
 
         // Calculate pending payments
-        const pendingPayments = paymentList.filter(p => p.status === 'Pending').length;
+        const pendingPayments = paymentList.filter(p => (p.status || '').toLowerCase() === 'pending').length;
         console.log('Pending payments:', pendingPayments, 'Monthly payments:', monthlyPayments);
 
         const finalStats = {
@@ -172,9 +172,10 @@ const Dashboard = () => {
         <div className="sidebar-header">
           <div className="logo">
             <img
-              src="/ecogrid-logo.svg"
+              src="/Eco.png"
               alt="EcoGrid Logo"
               className="logo-icon"
+              onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/ecogrid-logo.svg'; }}
             />
             <span className="logo-text">EcoGrid Admin</span>
           </div>

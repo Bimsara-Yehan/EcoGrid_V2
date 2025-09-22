@@ -51,7 +51,7 @@ app.use('*', (req, res) => {
   });
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5002;
 
 // Connect to database first, then start server
 const startServer = async () => {
