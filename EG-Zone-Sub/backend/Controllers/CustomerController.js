@@ -4,11 +4,11 @@ const Customer = require("../Model/CustomerModel");
 // List all customers (return new schema fields)
 const getAllCustomers = async (req, res) => {
   try {
-  // Return all customer fields for analysis, including location
-  const customers = await Customer.find().lean();
-  return res.status(200).json(customers || []);
+    // Return all customer fields for analysis, including location
+    const customers = await Customer.find().lean();
+    return res.status(200).json(customers || []);
   } catch (err) {
-    console.log(err);
+    console.error("Error in getAllCustomers:", err);
     return res.status(500).json({ message: "Server error" });
   }
 };

@@ -17,6 +17,10 @@ router.get("/:id/customers", ZoneController.getCustomersForZone);
 // Geometry update route
 router.put("/:id/geometry", ZoneController.updateGeometry);
 
+// Customer reassignment routes
+router.post("/reassign-customers", ZoneController.reassignCustomersToZone);
+router.get("/:zoneId/customers-in-zone", ZoneController.getCustomersInZone);
+
 //export
 module.exports = router;
 

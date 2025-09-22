@@ -7,17 +7,17 @@ export default defineConfig({
   server: {
     proxy: {
       '/api/Zones': {
-        target: 'http://localhost:5000',
+        target: 'http://localhost:5003',
         changeOrigin: true,
         secure: false,
       },
       '/api/subscriptions': {
-        target: 'http://localhost:5000',
+        target: 'http://localhost:5003',
         changeOrigin: true,
         secure: false,
       },
       '/api/customers': {
-        target: 'http://localhost:5000',
+        target: 'http://localhost:5003',
         changeOrigin: true,
         secure: false,
       },

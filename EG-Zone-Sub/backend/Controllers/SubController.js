@@ -1,6 +1,7 @@
 const Customer = require("../Model/CustomerModel");
 const Subscription = require("../Model/SubModel");
-const SubscriptionFinal = require('../Model/SubscriptionFinalModel')
+const SubscriptionFinal = require('../Model/SubscriptionFinalModel');
+const Zone = require('../Model/ZoneModel');
 
 // Get all subscriptions
 const getAllSubscriptions = async (req, res) => {
@@ -80,14 +81,107 @@ const updateSubscription = async (req, res) => {
   }
 };
 
-// Delete subscription
+// Soft delete subscription (preserves all data, just marks as deleted)
 const deleteSubscription = async (req, res) => {
   try {
-    const deletedSub = await Subscription.findByIdAndDelete(req.params.id);
-    if (!deletedSub) {
-      return res.status(404).json({ message: "Subscription not found" });
+    const { reason, deletedBy } = req.body;
+    const subscriptionId = req.params.id;
+
+    // Check if subscription exists and is not already deleted
+    const subscription = await SubscriptionFinal.findOne({
+      _id: subscriptionId,
+      $or: [
+        { isDeleted: { $exists: false } }, // Old records without isDeleted field
+        { isDeleted: false } // New records with isDeleted: false
+      ]
+    });
+    
+    if (!subscription) {
+      return res.status(404).json({ message: "Subscription not found or already deleted" });
     }
-    res.status(200).json({ message: "Subscription deleted", subscription: deletedSub });
+
+    // Soft delete the subscription
+    const deletedSub = await SubscriptionFinal.findByIdAndUpdate(
+      subscriptionId,
+      {
+        isDeleted: true,
+        deletedAt: new Date(),
+        deletedReason: reason || 'admin_cancelled',
+        deletedBy: deletedBy || null
+      },
+      { new: true }
+    );
+
+    res.status(200).json({ 
+      message: "Subscription soft deleted successfully", 
+      subscription: deletedSub,
+      note: "Data preserved for audit and recovery purposes"
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Restore soft deleted subscription
+const restoreSubscription = async (req, res) => {
+  try {
+    const subscriptionId = req.params.id;
+
+    // Check if subscription exists and is deleted
+    const subscription = await SubscriptionFinal.findOne({ 
+      _id: subscriptionId, 
+      isDeleted: true 
+    });
+    
+    if (!subscription) {
+      return res.status(404).json({ message: "Deleted subscription not found" });
+    }
+
+    // Restore the subscription
+    const restoredSub = await SubscriptionFinal.findByIdAndUpdate(
+      subscriptionId,
+      {
+        isDeleted: false,
+        deletedAt: null,
+        deletedReason: null,
+        deletedBy: null
+      },
+      { new: true }
+    );
+
+    res.status(200).json({ 
+      message: "Subscription restored successfully", 
+      subscription: restoredSub
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Permanently delete subscription (only for admin use)
+const permanentDeleteSubscription = async (req, res) => {
+  try {
+    const subscriptionId = req.params.id;
+
+    // Check if subscription exists and is soft deleted
+    const subscription = await SubscriptionFinal.findOne({ 
+      _id: subscriptionId, 
+      isDeleted: true 
+    });
+    
+    if (!subscription) {
+      return res.status(404).json({ message: "Soft deleted subscription not found" });
+    }
+
+    // Permanently delete
+    await SubscriptionFinal.findByIdAndDelete(subscriptionId);
+
+    res.status(200).json({ 
+      message: "Subscription permanently deleted", 
+      note: "This action cannot be undone"
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
@@ -108,15 +202,43 @@ const getSubscriptionsByZone = async (req, res) => {
   }
 };
 
+// Get all customer subscriptions (actual customer subscriptions, not plans)
+const getAllCustomerSubscriptions = async (req, res) => {
+  try {
+    // Handle both old records (without isDeleted) and new records (with isDeleted)
+    const customerSubscriptions = await SubscriptionFinal.find({
+      $or: [
+        { isDeleted: { $exists: false } }, // Old records without isDeleted field
+        { isDeleted: false } // New records with isDeleted: false
+      ]
+    })
+      .populate("customerId", "fullName phones addresses")
+      .populate("zoneId", "name areaType")
+      .populate("planId", "planName frequency price");
+
+    // Always return 200 with an array, even if empty
+    res.status(200).json(customerSubscriptions || []);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 const getSummary = async (req, res) => {
+  try {
     // Correct zone breakdown and total zones
-    const Zone = require('../Model/ZoneModel');
     const zoneTypeCounts = await Zone.aggregate([
       { $group: { _id: "$areaType", count: { $sum: 1 } } }
     ]);
     const totalZones = await Zone.countDocuments();
-  try {
-    const activeSubs = { status: 'active' };
+    // Simplified active subscriptions filter
+    const activeSubs = { 
+      status: 'active',
+      $or: [
+        { isDeleted: { $exists: false } }, // Old records without isDeleted field
+        { isDeleted: false } // New records with isDeleted: false
+      ]
+    };
 
     // 1. Customer count per zone
     const customerCountPerZone = await SubscriptionFinal.aggregate([
@@ -150,6 +272,24 @@ const getSummary = async (req, res) => {
       { $group: { _id: '$plan.frequency', totalRevenue: { $sum: '$plan.price' } } }
     ]);
 
+    // 5. Revenue per zone (actual revenue from subscription plans)
+    const revenuePerZone = await SubscriptionFinal.aggregate([
+      { $match: activeSubs },
+      { $lookup: { from: 'subscriptionplans', localField: 'planId', foreignField: '_id', as: 'plan' } },
+      { $unwind: '$plan' },
+      { $lookup: { from: 'zones', localField: 'zoneId', foreignField: '_id', as: 'zone' } },
+      { $unwind: '$zone' },
+      { $group: { 
+          _id: '$zoneId', 
+          zoneName: { $first: '$zone.name' },
+          areaType: { $first: '$zone.areaType' },
+          totalRevenue: { $sum: '$plan.price' },
+          customerCount: { $sum: 1 }
+        } 
+      },
+      { $project: { _id: 0, zoneId: '$_id', zoneName: 1, areaType: 1, totalRevenue: 1, customerCount: 1 } }
+    ]);
+
   // Remove incorrect totalZones logic
 
     // 6. Customer coverage (unique active subscribed customers / total customers * 100)
@@ -175,6 +315,7 @@ const getSummary = async (req, res) => {
       customerCountPerFrequency,
       subCountPerFrequency,
       revenuePerFrequency,
+      revenuePerZone,
       totalZones,
       zoneTypeCounts,
       customerCoverage,
@@ -190,10 +331,13 @@ const getSummary = async (req, res) => {
 module.exports = {
   getSummary,
   getAllSubscriptions,
+  getAllCustomerSubscriptions,
   getSubscriptionById,
   addSubscription,
   updateSubscription,
   deleteSubscription,
+  restoreSubscription,
+  permanentDeleteSubscription,
   getSubscriptionsByZone
   
 };

@@ -19,8 +19,8 @@ export async function getZones() {
     
     const data = await res.json()
     console.log('API Response - getZones:', data)
-    // Handle both { zones: [...] } and [...] response formats
-    const zones = data.zones || data || []
+    // Standardized response format: always return array
+    const zones = Array.isArray(data.zones) ? data.zones : Array.isArray(data) ? data : []
     console.log('Extracted zones:', zones)
     return zones
   } catch (error) {
@@ -34,6 +34,66 @@ export async function getSubscriptions() {
   if (!res.ok) throw new Error('Failed to load subscriptions')
   const data = await res.json()
   return data || []
+}
+
+export async function getCustomerSubscriptions() {
+  const res = await fetch('/api/subscriptions/customers')
+  if (!res.ok) throw new Error('Failed to load customer subscriptions')
+  const data = await res.json()
+  return data || []
+}
+
+// Zone management functions
+export async function deleteZone(zoneId) {
+  const res = await fetch(`/api/Zones/${zoneId}`, {
+    method: 'DELETE'
+  })
+  if (!res.ok) throw new Error('Failed to delete zone')
+  return await res.json()
+}
+
+export async function reassignCustomersToZone(fromZoneId, toZoneId, customerIds = null) {
+  const res = await fetch('/api/Zones/reassign-customers', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ fromZoneId, toZoneId, customerIds })
+  })
+  if (!res.ok) throw new Error('Failed to reassign customers')
+  return await res.json()
+}
+
+export async function getCustomersInZone(zoneId) {
+  const res = await fetch(`/api/Zones/${zoneId}/customers-in-zone`)
+  if (!res.ok) throw new Error('Failed to load customers in zone')
+  const data = await res.json()
+  return data || []
+}
+
+// Subscription soft delete functions
+export async function softDeleteSubscription(subscriptionId, reason = 'admin_cancelled', deletedBy = null) {
+  const res = await fetch(`/api/subscriptions/${subscriptionId}`, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ reason, deletedBy })
+  })
+  if (!res.ok) throw new Error('Failed to soft delete subscription')
+  return await res.json()
+}
+
+export async function restoreSubscription(subscriptionId) {
+  const res = await fetch(`/api/subscriptions/${subscriptionId}/restore`, {
+    method: 'POST'
+  })
+  if (!res.ok) throw new Error('Failed to restore subscription')
+  return await res.json()
+}
+
+export async function permanentDeleteSubscription(subscriptionId) {
+  const res = await fetch(`/api/subscriptions/${subscriptionId}/permanent`, {
+    method: 'DELETE'
+  })
+  if (!res.ok) throw new Error('Failed to permanently delete subscription')
+  return await res.json()
 }
 
 export async function createZone(zone) {
@@ -59,16 +119,6 @@ export async function updateZone(id, zone) {
   return await res.json()
 }
 
-export async function deleteZone(id) {
-  const res = await fetch(`/api/Zones/${id}`, {
-    method: 'DELETE',
-  })
-  if (!res.ok) {
-    const errorData = await res.json().catch(() => ({}))
-    throw new Error(errorData.message || 'Failed to delete zone')
-  }
-  return await res.json()
-}
 
 export async function updateZoneGeometry(zoneId, geometry) {
   const res = await fetch(`/api/Zones/${zoneId}/geometry`, {

@@ -48,6 +48,29 @@ const subscriptionFinalSchema = new mongoose.Schema({
   }],
   seedTag: {
     type: String
+  },
+  // Soft delete fields (optional for backward compatibility)
+  isDeleted: {
+    type: Boolean,
+    default: false,
+    required: false
+  },
+  deletedAt: {
+    type: Date,
+    default: null,
+    required: false
+  },
+  deletedReason: {
+    type: String,
+    enum: ['customer_cancelled', 'admin_cancelled', 'payment_failed', 'system_error', 'other'],
+    default: null,
+    required: false
+  },
+  deletedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User', // Reference to admin who deleted it
+    default: null,
+    required: false
   }
 }, { 
   timestamps: true, 
@@ -59,6 +82,8 @@ subscriptionFinalSchema.index({ zoneId: 1 });
 subscriptionFinalSchema.index({ status: 1 });
 subscriptionFinalSchema.index({ startedAt: 1 });
 subscriptionFinalSchema.index({ customerId: 1 });
+subscriptionFinalSchema.index({ isDeleted: 1 });
+subscriptionFinalSchema.index({ deletedAt: 1 });
 
 const SubscriptionFinal = mongoose.model('SubscriptionFinal', subscriptionFinalSchema);
 
