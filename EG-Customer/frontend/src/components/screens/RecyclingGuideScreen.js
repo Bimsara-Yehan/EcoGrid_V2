@@ -67,7 +67,6 @@ const CompostingScreen = () => {
   const [filteredStations, setFilteredStations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedArea, setSelectedArea] = useState('all');
   const [userLocation, setUserLocation] = useState(null);
   const [selectedStation, setSelectedStation] = useState(null);
   const [showMap, setShowMap] = useState(false);
@@ -100,14 +99,9 @@ const CompostingScreen = () => {
       );
     }
 
-    if (selectedArea !== 'all') {
-      filtered = filtered.filter(station =>
-        station.location.area.toLowerCase().includes(selectedArea.toLowerCase())
-      );
-    }
 
     setFilteredStations(filtered);
-  }, [stations, searchTerm, selectedArea]);
+  }, [stations, searchTerm]);
 
   const loadCompostingStations = async () => {
     try {
@@ -251,10 +245,6 @@ const CompostingScreen = () => {
     }
   };
 
-  const getAreas = () => {
-    const areas = [...new Set(stations.map(station => station.location.area))];
-    return areas.sort();
-  };
 
   if (loading) {
     return (
@@ -273,10 +263,10 @@ const CompostingScreen = () => {
       <div className="mb-8">
         <h1 className={`text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center gap-3`}>
           <Leaf className={`h-8 w-8 ${isDarkMode ? 'text-green-400' : 'text-green-600'}`} />
-          Composting Stations in Kandy
+          {getString('composting_stations')}
         </h1>
         <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} mt-1`}>
-          Find nearby composting stations and learn about organic waste management
+          {getString('composting_stations_desc')}
         </p>
       </div>
 
@@ -289,7 +279,7 @@ const CompostingScreen = () => {
             </div>
             <div>
               <p className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{stations.length}</p>
-              <p className={`text-sm opacity-75 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Total Stations</p>
+              <p className={`text-sm opacity-75 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{getString('total_stations')}</p>
             </div>
           </div>
         </div>
@@ -303,7 +293,7 @@ const CompostingScreen = () => {
               <p className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                 {stations.filter(s => s.status === 'operational').length}
               </p>
-              <p className={`text-sm opacity-75 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Operational</p>
+              <p className={`text-sm opacity-75 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{getString('operational')}</p>
             </div>
           </div>
         </div>
@@ -317,7 +307,7 @@ const CompostingScreen = () => {
               <p className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                 {stations.filter(s => s.isOpen).length}
               </p>
-              <p className={`text-sm opacity-75 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Open Now</p>
+              <p className={`text-sm opacity-75 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{getString('open_now')}</p>
             </div>
           </div>
         </div>
@@ -331,7 +321,7 @@ const CompostingScreen = () => {
               <p className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                 {stations.length > 0 ? (stations.reduce((sum, s) => sum + s.averageRating, 0) / stations.length).toFixed(1) : '0.0'}
               </p>
-              <p className={`text-sm opacity-75 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Avg Rating</p>
+              <p className={`text-sm opacity-75 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{getString('avg_rating')}</p>
             </div>
           </div>
         </div>
@@ -353,22 +343,6 @@ const CompostingScreen = () => {
               />
             </div>
 
-            {/* Area Filter */}
-            <div className="relative">
-              <Filter className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`} />
-              <select
-                value={selectedArea}
-                onChange={(e) => setSelectedArea(e.target.value)}
-                className={`pl-10 pr-8 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
-              >
-                <option value="all">All Areas</option>
-                {getAreas().map((area) => (
-                  <option key={area} value={area}>
-                    {area}
-                  </option>
-                ))}
-              </select>
-            </div>
           </div>
 
           {/* Map Toggle */}
@@ -431,10 +405,15 @@ const CompostingScreen = () => {
                 <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(station.status, isDarkMode)}`}>
                   {getStatusText(station.status)}
                 </span>
-                {station.isOpen && (
+                {station.isOpen ? (
                   <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${isDarkMode ? 'bg-green-900/30 text-green-300 border border-green-800/50' : 'bg-green-100 text-green-800 border border-green-200'}`}>
                     <CheckCircle className="h-3 w-3 mr-1" />
                     Open Now
+                  </span>
+                ) : (
+                  <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${isDarkMode ? 'bg-red-900/30 text-red-300 border border-red-800/50' : 'bg-red-100 text-red-800 border border-red-200'}`}>
+                    <AlertCircle className="h-3 w-3 mr-1" />
+                    Closed
                   </span>
                 )}
               </div>
@@ -442,13 +421,32 @@ const CompostingScreen = () => {
 
             <div className="space-y-3">
               {/* Operating Hours */}
-              <div className={`flex items-center gap-2 text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                <Clock className="h-4 w-4" />
-                <span>
-                  {station.operatingHours ? `${station.operatingHours.open || 'N/A'} - ${station.operatingHours.close || 'N/A'}` : 'N/A'}
-                </span>
-                <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>•</span>
-                <span>{station.operatingHours && station.operatingHours.days ? station.operatingHours.days.join(', ') : 'N/A'}</span>
+              <div className={`space-y-2`}>
+                <div className={`flex items-center gap-2 text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                  <Clock className="h-4 w-4" />
+                  <span className="font-medium">Operating Hours:</span>
+                </div>
+                <div className={`ml-6 text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                  {station.operatingHours && station.operatingHours.open && station.operatingHours.close ? (
+                    <div>
+                      <div className="font-medium">
+                        {station.operatingHours.open} - {station.operatingHours.close}
+                      </div>
+                      <div className="text-xs mt-1">
+                        {station.operatingHours.days && station.operatingHours.days.length > 0 
+                          ? station.operatingHours.days.join(', ')
+                          : 'Daily'
+                        }
+                      </div>
+                    </div>
+                  ) : (
+                    <div>
+                      <div className="font-medium">8:00 AM - 6:00 PM</div>
+                      <div className="text-xs mt-1">Monday - Sunday</div>
+                      <div className="text-xs mt-1 italic text-gray-400">Default hours (contact station for exact times)</div>
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Contact */}
@@ -504,6 +502,30 @@ const CompostingScreen = () => {
                   <span>{station.distance} km away</span>
                 </div>
               )}
+
+              {/* Get Directions Button */}
+              <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent card click
+                    const lat = station?.location?.coordinates?.latitude;
+                    const lng = station?.location?.coordinates?.longitude;
+                    if (lat && lng) {
+                      window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`, '_blank');
+                    }
+                  }}
+                  className={`w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-colors ${
+                    isDarkMode 
+                      ? 'bg-green-600 hover:bg-green-700 text-white' 
+                      : 'bg-green-500 hover:bg-green-600 text-white'
+                  }`}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                  </svg>
+                  Get Directions
+                </button>
+              </div>
             </div>
           </div>
         ))}
@@ -515,7 +537,7 @@ const CompostingScreen = () => {
           <MapPin className={`h-16 w-16 mx-auto mb-4 ${isDarkMode ? 'text-gray-600' : 'text-gray-300'}`} />
           <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-2`}>No stations found</h3>
           <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-            {searchTerm || selectedArea !== 'all'
+            {searchTerm
               ? 'Try adjusting your search criteria to find composting stations.'
               : 'No composting stations are currently available.'}
           </p>

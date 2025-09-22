@@ -185,26 +185,26 @@ const WasteCollectionScreen = () => {
       <div className="mb-8">
         <h1 className={`text-2xl sm:text-3xl font-bold flex items-center gap-3 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
           <Trash2 className={`h-6 w-6 sm:h-8 sm:w-8 ${isDarkMode ? 'text-green-400' : 'text-green-600'}`} />
-          <span className="truncate">Weekly Waste Collection Schedule</span>
+          <span className="truncate">{getString('waste_collection_title')}</span>
         </h1>
-        <p className={`mt-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Fixed weekly schedule - same waste type collected every week on the same day</p>
+        <p className={`mt-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{getString('collection_overview_desc')}</p>
         
         {/* Collection Status Info */}
         <div className={`mt-4 p-4 rounded-lg ${isDarkMode ? 'bg-blue-900/20 border border-blue-800' : 'bg-blue-50 border border-blue-200'}`}>
           <div className="flex items-start gap-3">
             <div className="flex-shrink-0">
-              <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5" />
+              <AlertCircle className={`h-5 w-5 mt-0.5 ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`} />
             </div>
             <div>
-              <h3 className="text-sm font-medium text-blue-900 mb-1">Collection Status System</h3>
-              <p className="text-sm text-blue-700">
-                Collection status is updated in real-time by truck drivers. Status resets to "Pending" at the start of each week.
+              <h3 className={`text-sm font-medium mb-1 ${isDarkMode ? 'text-blue-300' : 'text-blue-900'}`}>{getString('collection_status_system')}</h3>
+              <p className={`text-sm ${isDarkMode ? 'text-blue-200' : 'text-blue-700'}`}>
+                {getString('collection_status_desc')}
                 <br />
-                <span className="font-medium">Status Legend:</span> 
-                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800 ml-2 mr-1">Pending</span>
-                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 mr-1">In Progress</span>
-                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 mr-1">Completed</span>
-                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">Missed</span>
+                <span className="font-medium">{getString('status_legend')}</span> 
+                <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ml-2 mr-1 ${isDarkMode ? 'bg-yellow-900/30 text-yellow-300 border border-yellow-800/50' : 'bg-yellow-100 text-yellow-800'}`}>{getString('pending')}</span>
+                <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium mr-1 ${isDarkMode ? 'bg-blue-900/30 text-blue-300 border border-blue-800/50' : 'bg-blue-100 text-blue-800'}`}>{getString('in_progress')}</span>
+                <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium mr-1 ${isDarkMode ? 'bg-green-900/30 text-green-300 border border-green-800/50' : 'bg-green-100 text-green-800'}`}>{getString('completed')}</span>
+                <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${isDarkMode ? 'bg-red-900/30 text-red-300 border border-red-800/50' : 'bg-red-100 text-red-800'}`}>{getString('missed')}</span>
               </p>
             </div>
           </div>
@@ -213,78 +213,78 @@ const WasteCollectionScreen = () => {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
-        <div className={`rounded-xl p-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm border ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+        <div className={`rounded-xl p-6 ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'} shadow-sm transition-all duration-200 hover:shadow-md`}>
           <div className="flex items-center space-x-3">
-            <div className={`p-2 rounded-lg ${isDarkMode ? 'bg-gray-700' : 'bg-blue-50'}`}>
-              <Calendar className="w-6 h-6 text-blue-600" />
+            <div className={`p-2 rounded-lg ${isDarkMode ? 'bg-gray-700/50 border border-gray-600' : 'bg-blue-50'}`}>
+              <Calendar className={`w-6 h-6 ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`} />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">{weeklySchedule.length}</p>
-              <p className="text-sm opacity-75 text-gray-600">Weekly Schedule</p>
+              <p className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{weeklySchedule.length}</p>
+              <p className={`text-sm opacity-75 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{getString('weekly_schedule')}</p>
             </div>
           </div>
         </div>
 
-        <div className={`rounded-xl p-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm border ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+        <div className={`rounded-xl p-6 ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'} shadow-sm transition-all duration-200 hover:shadow-md`}>
           <div className="flex items-center space-x-3">
-            <div className={`p-2 rounded-lg ${isDarkMode ? 'bg-gray-700' : 'bg-green-50'}`}>
-              <Clock className="w-6 h-6 text-green-600" />
+            <div className={`p-2 rounded-lg ${isDarkMode ? 'bg-gray-700/50 border border-gray-600' : 'bg-green-50'}`}>
+              <Clock className={`w-6 h-6 ${isDarkMode ? 'text-green-400' : 'text-green-600'}`} />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">{weeklySchedule.filter(s => s.collectionStatus === 'completed').length}</p>
-              <p className="text-sm opacity-75 text-gray-600">Completed Today</p>
+              <p className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{weeklySchedule.filter(s => s.collectionStatus === 'completed').length}</p>
+              <p className={`text-sm opacity-75 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{getString('completed_today')}</p>
             </div>
           </div>
         </div>
 
-        <div className={`rounded-xl p-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm border ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+        <div className={`rounded-xl p-6 ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'} shadow-sm transition-all duration-200 hover:shadow-md`}>
           <div className="flex items-center space-x-3">
-            <div className={`p-2 rounded-lg ${isDarkMode ? 'bg-gray-700' : 'bg-orange-50'}`}>
-              <Trash2 className="w-6 h-6 text-orange-600" />
+            <div className={`p-2 rounded-lg ${isDarkMode ? 'bg-gray-700/50 border border-gray-600' : 'bg-orange-50'}`}>
+              <Trash2 className={`w-6 h-6 ${isDarkMode ? 'text-orange-400' : 'text-orange-600'}`} />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">{wasteTypes.length - 1}</p>
-              <p className="text-sm opacity-75 text-gray-600">Waste Types</p>
+              <p className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{wasteTypes.length - 1}</p>
+              <p className={`text-sm opacity-75 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{getString('waste_types')}</p>
             </div>
           </div>
         </div>
 
-        <div className={`rounded-xl p-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm border ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+        <div className={`rounded-xl p-6 ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'} shadow-sm transition-all duration-200 hover:shadow-md`}>
           <div className="flex items-center space-x-3">
-            <div className={`p-2 rounded-lg ${isDarkMode ? 'bg-gray-700' : 'bg-purple-50'}`}>
-              <RefreshCw className="w-6 h-6 text-purple-600" />
+            <div className={`p-2 rounded-lg ${isDarkMode ? 'bg-gray-700/50 border border-gray-600' : 'bg-purple-50'}`}>
+              <RefreshCw className={`w-6 h-6 ${isDarkMode ? 'text-purple-400' : 'text-purple-600'}`} />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">7</p>
-              <p className="text-sm opacity-75 text-gray-600">Days Covered</p>
+              <p className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>7</p>
+              <p className={`text-sm opacity-75 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Days Covered</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Filters */}
-      <div className={`rounded-xl p-6 mb-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm border ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+      <div className={`rounded-xl p-6 mb-6 ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'} shadow-sm transition-all duration-200`}>
         <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
           <div className="flex flex-col md:flex-row gap-4 flex-1">
             {/* Search */}
             <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`} />
               <input
                 type="text"
                 placeholder="Search schedules..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' : 'bg-white border-gray-300 text-gray-900'}`}
               />
             </div>
 
             {/* Day Filter */}
             <div className="relative">
-              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Calendar className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`} />
               <select
                 value={dayFilter}
                 onChange={(e) => setDayFilter(e.target.value)}
-                className="pl-10 pr-8 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                className={`pl-10 pr-8 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
               >
                 {daysOfWeek.map((day) => (
                   <option key={day.value} value={day.value}>
@@ -296,11 +296,11 @@ const WasteCollectionScreen = () => {
 
             {/* Type Filter */}
             <div className="relative">
-              <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Filter className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`} />
               <select
                 value={typeFilter}
                 onChange={(e) => setTypeFilter(e.target.value)}
-                className="pl-10 pr-8 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                className={`pl-10 pr-8 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
               >
                 {wasteTypes.map((type) => (
                   <option key={type.value} value={type.value}>
@@ -314,7 +314,7 @@ const WasteCollectionScreen = () => {
           {/* Add Schedule Button */}
           <button 
             onClick={handleAddScheduleClick}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors ${isDarkMode ? 'bg-green-600 hover:bg-green-700 text-white focus:ring-offset-gray-800' : 'bg-green-600 hover:bg-green-700 text-white focus:ring-offset-white'}`}
           >
             <Plus className="h-4 w-4" />
             Add Schedule
@@ -323,38 +323,38 @@ const WasteCollectionScreen = () => {
       </div>
 
       {/* Schedule Table */}
-      <div className={`rounded-xl overflow-hidden ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm border ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+      <div className={`rounded-xl overflow-hidden ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'} shadow-sm transition-all duration-200`}>
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
+          <table className={`min-w-full ${isDarkMode ? 'divide-y divide-gray-700' : 'divide-y divide-gray-200'}`}>
             <thead className={`${isDarkMode ? 'bg-gray-700' : 'bg-gray-50'}`}>
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>
                   Day
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>
                   Time
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>
                   Type
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>
                   Collection Status
                 </th>
               </tr>
             </thead>
-            <tbody className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} divide-y divide-gray-200`}>
+            <tbody className={`${isDarkMode ? 'bg-gray-800 divide-y divide-gray-700' : 'bg-white divide-y divide-gray-200'}`}>
               {filteredSchedule.map((schedule) => (
                 <tr key={schedule.id} className={`${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50'}`}>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <Calendar className="h-4 w-4 text-gray-400 mr-2" />
-                      <span className="text-sm font-medium text-gray-900">{schedule.day}</span>
+                      <Calendar className={`h-4 w-4 mr-2 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+                      <span className={`text-sm font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{schedule.day}</span>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <Clock className="h-4 w-4 text-gray-400 mr-2" />
-                      <span className="text-sm text-gray-900">{schedule.time}</span>
+                      <Clock className={`h-4 w-4 mr-2 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+                      <span className={`text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{schedule.time}</span>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -377,10 +377,10 @@ const WasteCollectionScreen = () => {
 
       {/* Empty State */}
       {filteredSchedule.length === 0 && (
-        <div className={`rounded-xl p-12 text-center ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm border ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-          <Trash2 className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">No schedules found</h3>
-          <p className="text-gray-600">
+        <div className={`rounded-xl p-12 text-center ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'} shadow-sm transition-all duration-200`}>
+          <Trash2 className={`h-16 w-16 mx-auto mb-4 ${isDarkMode ? 'text-gray-600' : 'text-gray-300'}`} />
+          <h3 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>No schedules found</h3>
+          <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
             {searchTerm || typeFilter !== 'all' || dayFilter !== 'all'
               ? 'Try adjusting your filters to see more schedules.'
               : 'No waste collection schedules have been set up yet.'}
@@ -390,13 +390,13 @@ const WasteCollectionScreen = () => {
 
       {/* Special Collection Request Section */}
       <div ref={specialRequestRef} className="mt-12">
-        <div className={`rounded-xl p-8 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm border ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+        <div className={`rounded-xl p-8 ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'} shadow-sm transition-all duration-200`}>
           <div className="text-center mb-8">
             <div className="flex items-center justify-center mb-4">
-              <AlertCircle className="h-12 w-12 text-orange-600" />
+              <AlertCircle className={`h-12 w-12 ${isDarkMode ? 'text-orange-400' : 'text-orange-600'}`} />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Need Special Collection?</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
+            <h2 className={`text-2xl font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Need Special Collection?</h2>
+            <p className={`max-w-2xl mx-auto ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
               Have large items, bulk waste, or need collection outside regular schedule? 
               Request a special collection service and we'll arrange pickup at your convenience.
             </p>
@@ -417,7 +417,7 @@ const WasteCollectionScreen = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 {/* Waste Type */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                     Waste Type *
                   </label>
                   <select
@@ -425,7 +425,7 @@ const WasteCollectionScreen = () => {
                     value={requestForm.wasteType}
                     onChange={handleRequestFormChange}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
                   >
                     <option value="">Select waste type</option>
                     <option value="bulk_items">Bulk Items (Furniture, Appliances)</option>
@@ -439,7 +439,7 @@ const WasteCollectionScreen = () => {
 
                 {/* Quantity */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                     Estimated Quantity *
                   </label>
                   <select
@@ -447,7 +447,7 @@ const WasteCollectionScreen = () => {
                     value={requestForm.quantity}
                     onChange={handleRequestFormChange}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
                   >
                     <option value="">Select quantity</option>
                     <option value="small">Small (1-2 bags)</option>
@@ -459,7 +459,7 @@ const WasteCollectionScreen = () => {
 
                 {/* Preferred Date */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                     Preferred Date *
                   </label>
                   <input
@@ -469,13 +469,13 @@ const WasteCollectionScreen = () => {
                     onChange={handleRequestFormChange}
                     required
                     min={new Date().toISOString().split('T')[0]}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
                   />
                 </div>
 
                 {/* Preferred Time */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                     Preferred Time *
                   </label>
                   <select
@@ -483,7 +483,7 @@ const WasteCollectionScreen = () => {
                     value={requestForm.preferredTime}
                     onChange={handleRequestFormChange}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
                   >
                     <option value="">Select time slot</option>
                     <option value="morning">Morning (8:00 AM - 12:00 PM)</option>
@@ -495,8 +495,8 @@ const WasteCollectionScreen = () => {
 
                 {/* Description */}
                 <div className="sm:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    <FileText className="inline h-4 w-4 mr-1" />
+                  <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    <FileText className={`inline h-4 w-4 mr-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
                     Additional Details
                   </label>
                   <textarea
@@ -505,7 +505,7 @@ const WasteCollectionScreen = () => {
                     onChange={handleRequestFormChange}
                     rows={3}
                     placeholder="Describe the waste items, special handling requirements, or any other relevant information..."
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'}`}
                   />
                 </div>
 
@@ -516,13 +516,13 @@ const WasteCollectionScreen = () => {
                 <button
                   type="button"
                   onClick={() => setShowRequestForm(false)}
-                  className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors"
+                  className={`px-6 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors ${isDarkMode ? 'border-gray-600 text-gray-300 hover:bg-gray-700 focus:ring-gray-500 focus:ring-offset-gray-800' : 'border-gray-300 text-gray-700 hover:bg-gray-50 focus:ring-gray-500 focus:ring-offset-white'}`}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="inline-flex items-center gap-2 px-6 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors"
+                  className={`inline-flex items-center gap-2 px-6 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors ${isDarkMode ? 'bg-orange-600 hover:bg-orange-700 text-white focus:ring-orange-500 focus:ring-offset-gray-800' : 'bg-orange-600 hover:bg-orange-700 text-white focus:ring-orange-500 focus:ring-offset-white'}`}
                 >
                   <Send className="h-4 w-4" />
                   Submit Request

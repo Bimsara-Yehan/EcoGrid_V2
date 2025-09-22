@@ -165,11 +165,11 @@ const TasksScreen = () => {
     <div className="max-w-6xl mx-auto p-6">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-          <CheckSquare className="h-8 w-8 text-green-600" />
-          My Tasks
+        <h1 className={`text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center gap-3`}>
+          <CheckSquare className={`h-8 w-8 ${isDarkMode ? 'text-green-400' : 'text-green-600'}`} />
+          {getString('my_tasks')}
         </h1>
-        <p className="text-gray-600 mt-1">Complete your assigned tasks to earn Ecopoints</p>
+        <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} mt-1`}>{getString('tasks_desc')}</p>
       </div>
 
       {/* Filters */}
@@ -181,7 +181,7 @@ const TasksScreen = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search tasks..."
+                placeholder={getString('search_tasks')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
@@ -196,11 +196,11 @@ const TasksScreen = () => {
                 onChange={(e) => setStatusFilter(e.target.value)}
                 className="pl-10 pr-8 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
               >
-                <option value="all">All Status</option>
-                <option value="assigned">Assigned</option>
-                <option value="completed">Completed</option>
-                <option value="approved">Approved</option>
-                <option value="rejected">Rejected</option>
+                <option value="all">{getString('all_status')}</option>
+                <option value="assigned">{getString('assigned')}</option>
+                <option value="completed">{getString('completed')}</option>
+                <option value="approved">{getString('approved')}</option>
+                <option value="rejected">{getString('rejected')}</option>
               </select>
             </div>
 
@@ -212,11 +212,11 @@ const TasksScreen = () => {
                 onChange={(e) => setPriorityFilter(e.target.value)}
                 className="pl-10 pr-8 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
               >
-                <option value="all">All Priority</option>
-                <option value="urgent">Urgent</option>
-                <option value="high">High</option>
-                <option value="medium">Medium</option>
-                <option value="low">Low</option>
+                <option value="all">{getString('all_priority')}</option>
+                <option value="urgent">{getString('high')}</option>
+                <option value="high">{getString('high')}</option>
+                <option value="medium">{getString('medium')}</option>
+                <option value="low">{getString('low')}</option>
               </select>
             </div>
           </div>
@@ -228,11 +228,11 @@ const TasksScreen = () => {
         {filteredTasks.length === 0 ? (
           <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
             <CheckSquare className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No tasks found</h3>
-            <p className="text-gray-600">
+            <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-2`}>{getString('no_tasks')}</h3>
+            <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
               {searchTerm || statusFilter !== 'all' || priorityFilter !== 'all'
                 ? 'Try adjusting your filters to see more tasks.'
-                : 'You don\'t have any tasks assigned yet.'}
+                : getString('no_tasks')}
             </p>
           </div>
         ) : (

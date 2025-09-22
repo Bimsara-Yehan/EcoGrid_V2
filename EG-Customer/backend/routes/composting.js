@@ -9,7 +9,7 @@ const auth = require('../middleware/auth');
 // @access  Public
 router.get('/stations', async (req, res) => {
     try {
-        const { lat, lng, maxDistance = 10, status, area } = req.query;
+        const { lat, lng, maxDistance = 100, status, area } = req.query;
         
         let query = { isActive: true };
         
@@ -60,7 +60,7 @@ router.get('/stations', async (req, res) => {
         const stations = [...normalizedLegacy, ...simpleNormalized];
 
         // If coordinates provided, calculate distances and filter
-        if (lat && lng) {
+        if (lat && lng && !isNaN(parseFloat(lat)) && !isNaN(parseFloat(lng))) {
             const userLat = parseFloat(lat);
             const userLng = parseFloat(lng);
             const maxDist = parseFloat(maxDistance);

@@ -6,15 +6,18 @@ import { useLanguage } from '../../contexts/LanguageContext';
 import { 
   CheckCircle, 
   RefreshCw, 
-  Calendar, 
-  RefreshCw as RecyclingIcon, 
-  User, 
-  History,
   Leaf,
   CheckSquare,
   Star,
   Clock,
-  AlertCircle
+  AlertCircle,
+  ChevronLeft,
+  ChevronRight,
+  MapPin,
+  Calendar,
+  Users,
+  Pause,
+  Play
 } from 'lucide-react';
 import axios from 'axios';
 
@@ -30,11 +33,27 @@ const DashboardScreen = () => {
     ecopoints: 0
   });
   const [tasks, setTasks] = useState([]);
+  const [communityEvents, setCommunityEvents] = useState([]);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+
 
   useEffect(() => {
     fetchStats();
     fetchTasks();
+    fetchCommunityEvents();
   }, []);
+
+  // Auto-slideshow effect
+  useEffect(() => {
+    if (communityEvents.length > 1 && !isPaused) {
+      const interval = setInterval(() => {
+        setCurrentSlide((prev) => (prev + 1) % communityEvents.length);
+      }, 2000); // Change slide every 2 seconds
+
+      return () => clearInterval(interval);
+    }
+  }, [communityEvents.length, isPaused]);
 
   const fetchStats = async () => {
     try {
@@ -58,36 +77,39 @@ const DashboardScreen = () => {
     }
   };
 
-  const featureCards = [
-    {
-      icon: Calendar,
-      title: getString('waste_collection'),
-      description: getString('waste_collection_desc'),
-      onClick: () => navigate('/waste-collection'),
-      color: 'bg-blue-500'
-    },
-    {
-      icon: RecyclingIcon,
-      title: getString('recycling_guide'),
-      description: getString('recycling_guide_desc'),
-      onClick: () => navigate('/recycling-guide'),
-      color: 'bg-green-500'
-    },
-    {
-      icon: User,
-      title: getString('profile'),
-      description: getString('profile_desc'),
-      onClick: () => navigate('/profile'),
-      color: 'bg-purple-500'
-    },
-    {
-      icon: History,
-      title: getString('history'),
-      description: getString('history_desc'),
-      onClick: () => {},
-      color: 'bg-orange-500'
+  const fetchCommunityEvents = async () => {
+    try {
+      const response = await axios.get('/api/community-events?limit=3');
+      setCommunityEvents(response.data || []);
+    } catch (error) {
+      console.error('Failed to fetch community events:', error);
     }
-  ];
+  };
+
+  const nextSlide = () => {
+    console.log('Next slide clicked');
+    setCurrentSlide((prev) => (prev + 1) % communityEvents.length);
+  };
+
+  const prevSlide = () => {
+    console.log('Prev slide clicked');
+    setCurrentSlide((prev) => (prev - 1 + communityEvents.length) % communityEvents.length);
+  };
+
+  const goToSlide = (index) => {
+    console.log('Go to slide:', index);
+    setCurrentSlide(index);
+  };
+
+  const togglePause = () => {
+    console.log('Toggle pause clicked, current state:', isPaused);
+    setIsPaused(prev => {
+      const newState = !prev;
+      console.log('Setting pause state to:', newState);
+      return newState;
+    });
+  };
+
 
   return (
     <div className="space-y-6">
@@ -133,19 +155,131 @@ const DashboardScreen = () => {
         />
       </div>
 
-      {/* Feature Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {featureCards.map((card, index) => (
-          <FeatureCard
-            key={index}
-            icon={card.icon}
-            title={card.title}
-            description={card.description}
-            onClick={card.onClick}
-            color={card.color}
-            isDarkMode={isDarkMode}
-          />
-        ))}
+      {/* Community Events Slideshow */}
+      <div 
+        className={`rounded-xl overflow-hidden ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'} shadow-sm`}
+      >
+        <div className="relative">
+          <div className="relative h-80 overflow-hidden">
+            {communityEvents.length > 0 ? (
+              <>
+                {/* Event Image */}
+                <div 
+                  className="absolute inset-0 bg-cover bg-center transition-all duration-500 ease-in-out"
+                  style={{
+                    backgroundImage: `url(${communityEvents[currentSlide]?.imageUrl || 'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80'})`
+                  }}
+                >
+                  <div className="absolute inset-0 bg-black bg-opacity-40"></div>
+                </div>
+                
+                {/* Event Content */}
+                <div className="relative z-10 h-full flex flex-col justify-end p-6">
+                  <div className="text-white">
+                    <h3 className="text-2xl font-bold mb-2">
+                      {communityEvents[currentSlide]?.title}
+                    </h3>
+                    <p className="text-lg mb-4 opacity-90 line-clamp-2">
+                      {communityEvents[currentSlide]?.description}
+                    </p>
+                    
+                    {/* Event Details */}
+                    <div className="flex flex-wrap gap-4 mb-4">
+                      <div className="flex items-center space-x-2">
+                        <Calendar className="w-4 h-4" />
+                        <span className="text-sm">
+                          {new Date(communityEvents[currentSlide]?.eventDate).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Clock className="w-4 h-4" />
+                        <span className="text-sm">
+                          {communityEvents[currentSlide]?.duration}
+                        </span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <MapPin className="w-4 h-4" />
+                        <span className="text-sm">
+                          {communityEvents[currentSlide]?.location?.name}
+                        </span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Users className="w-4 h-4" />
+                        <span className="text-sm">
+                          {communityEvents[currentSlide]?.currentParticipants}/{communityEvents[currentSlide]?.maxParticipants} participants
+                        </span>
+                      </div>
+                    </div>
+                    
+                    {/* Organizer */}
+                    <div className="text-sm opacity-80">
+                      Organized by: {communityEvents[currentSlide]?.organizer?.name}
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Pause/Play Button */}
+                {communityEvents.length > 1 && (
+                  <button
+                    onClick={togglePause}
+                    className="absolute top-4 right-4 bg-white bg-opacity-40 hover:bg-opacity-60 text-white p-3 rounded-full transition-all duration-200 shadow-lg z-30 cursor-pointer"
+                    style={{ zIndex: 30 }}
+                    title={isPaused ? 'Play slideshow' : 'Pause slideshow'}
+                    type="button"
+                  >
+                    {isPaused ? <Play className="w-6 h-6" /> : <Pause className="w-6 h-6" />}
+                  </button>
+                )}
+
+                {/* Navigation Arrows */}
+                {communityEvents.length > 1 && (
+                  <>
+                    <button
+                      onClick={prevSlide}
+                      className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-30 hover:bg-opacity-50 text-white p-3 rounded-full transition-all duration-200 shadow-lg z-20"
+                      style={{ zIndex: 20 }}
+                    >
+                      <ChevronLeft className="w-6 h-6" />
+                    </button>
+                    <button
+                      onClick={nextSlide}
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-30 hover:bg-opacity-50 text-white p-3 rounded-full transition-all duration-200 shadow-lg z-20"
+                      style={{ zIndex: 20 }}
+                    >
+                      <ChevronRight className="w-6 h-6" />
+                    </button>
+                  </>
+                )}
+              </>
+            ) : (
+              <div className="h-full flex items-center justify-center">
+                <div className="text-center">
+                  <Calendar className={`w-16 h-16 mx-auto mb-4 ${isDarkMode ? 'text-gray-600' : 'text-gray-300'}`} />
+                  <p className={`text-lg ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    No community events available
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+          
+          {/* Slide Indicators */}
+          {communityEvents.length > 1 && (
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+              {communityEvents.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => goToSlide(index)}
+                  className={`w-3 h-3 rounded-full transition-all duration-200 ${
+                    index === currentSlide 
+                      ? 'bg-white' 
+                      : 'bg-white bg-opacity-50 hover:bg-opacity-75'
+                  }`}
+                />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Tasks */}
@@ -279,26 +413,6 @@ const TaskItem = ({ task }) => {
   );
 };
 
-const FeatureCard = ({ icon: Icon, title, description, onClick, color, isDarkMode }) => {
-  return (
-    <button
-      onClick={onClick}
-      className={`w-full p-6 rounded-xl text-left transition-all duration-200 hover:scale-105 ${
-        isDarkMode ? 'bg-gray-800 hover:bg-gray-700 border border-gray-700' : 'bg-white hover:bg-gray-50 border border-gray-200'
-      } shadow-sm hover:shadow-md`}
-    >
-      <div className="flex items-center space-x-4">
-        <div className={`p-3 rounded-lg ${isDarkMode ? `${color.replace('600', '500')}/20 border border-${color.replace('600', '500')}/30` : `${color} bg-opacity-10`}`}>
-          <Icon className={`w-8 h-8 ${isDarkMode ? color.replace('600', '400') : color}`} />
-        </div>
-        <div className="flex-1">
-          <h3 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{title}</h3>
-          <p className={`text-sm leading-relaxed ${isDarkMode ? 'text-gray-300 opacity-90' : 'text-gray-600 opacity-75'}`}>{description}</p>
-        </div>
-      </div>
-    </button>
-  );
-};
 
 export default DashboardScreen;
 

@@ -1,40 +1,22 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import Logo from '../common/Logo';
-import { Mail, Lock, Eye, EyeOff, Building2, ChevronDown, User, Flame } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, Building2 } from 'lucide-react';
 
 const LoginScreen = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const { getString } = useLanguage();
   const { isDarkMode } = useTheme();
-  const dropdownRef = useRef(null);
-  
   const [formData, setFormData] = useState({
     email: '',
-    password: '',
-    role: 'customer' // Default role
+    password: ''
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [showRoleDropdown, setShowRoleDropdown] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
-  // Handle click outside dropdown
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setShowRoleDropdown(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
 
   const handleChange = (e) => {
     setFormData({
@@ -43,19 +25,12 @@ const LoginScreen = () => {
     });
   };
 
-  const handleRoleSelect = (role) => {
-    setFormData({
-      ...formData,
-      role: role
-    });
-    setShowRoleDropdown(false);
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     
-    const success = await login(formData.email, formData.password, formData.role);
+    const success = await login(formData.email, formData.password, 'customer');
     if (success) {
       navigate('/redirect');
     }
@@ -63,16 +38,6 @@ const LoginScreen = () => {
     setIsLoading(false);
   };
 
-  const roles = [
-    { value: 'customer', label: 'Basic User', icon: User, description: 'Schedule waste collections and access recycling guides' },
-    { value: 'incinerator', label: 'Incinerator Operator', icon: Flame, description: 'Manage incineration facility operations' }
-  ];
-
-  const getRoleIcon = (role) => {
-    const roleData = roles.find(r => r.value === role);
-    const IconComponent = roleData?.icon || User;
-    return <IconComponent className="h-4 w-4" />;
-  };
 
   return (
     <div className={`min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
@@ -153,52 +118,6 @@ const LoginScreen = () => {
                 </button>
               </div>
             </div>
-
-            {/* Role Selection Field */}
-            <div ref={dropdownRef} className="relative">
-              <label htmlFor="role" className={`block text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                Select Your Role
-              </label>
-              <div className="mt-1 relative">
-                <button
-                  type="button"
-                  onClick={() => setShowRoleDropdown(!showRoleDropdown)}
-                  className={`appearance-none relative block w-full text-left px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm ${
-                    isDarkMode ? 'bg-gray-800 border-gray-600 text-white' : 'bg-white text-gray-900'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <span className="mr-2">{getRoleIcon(formData.role)}</span>
-                      <span>{roles.find(r => r.value === formData.role)?.label}</span>
-                    </div>
-                    <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform ${showRoleDropdown ? 'rotate-180' : ''}`} />
-                  </div>
-                </button>
-                
-                {showRoleDropdown && (
-                  <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-auto">
-                    {roles.map((role) => (
-                      <button
-                        key={role.value}
-                        type="button"
-                        onClick={() => handleRoleSelect(role.value)}
-                        className="w-full text-left px-3 py-2 hover:bg-gray-50 focus:bg-gray-50 focus:outline-none"
-                      >
-                        <div className="flex items-center">
-                          <span className="mr-2">{getRoleIcon(role.value)}</span>
-                          <div>
-                            <div className="font-medium text-gray-900">{role.label}</div>
-                            <div className="text-xs text-gray-500">{role.description}</div>
-                          </div>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-
 
           </div>
 

@@ -71,8 +71,8 @@ const compostingStations = [
         location: {
             address: "45 Katugastota Road, Katugastota 20800",
             coordinates: {
-                latitude: 7.3156,
-                longitude: 80.6167
+                latitude: 7.28,
+                longitude: 80.62
             },
             area: "Katugastota"
         },
@@ -180,24 +180,44 @@ const connectDB = async () => {
 // Create composting stations
 const createCompostingStations = async () => {
     try {
-        // Clear existing stations
-        await CompostingStation.deleteMany({});
-        console.log('Cleared existing composting stations');
-
-        // Create new stations
-        const createdStations = await CompostingStation.insertMany(compostingStations);
-        console.log(`Created ${createdStations.length} composting stations in Kandy`);
+        // Update Katugastota station coordinates
+        const katugastotaStation = compostingStations.find(station => station.name === "Katugastota Community Composting");
+        let createdStations = [];
+        
+        if (katugastotaStation) {
+            const updatedStation = await CompostingStation.findOneAndUpdate(
+                { name: "Katugastota Community Composting" },
+                { 
+                    'location.coordinates.latitude': katugastotaStation.location.coordinates.latitude,
+                    'location.coordinates.longitude': katugastotaStation.location.coordinates.longitude
+                },
+                { new: true }
+            );
+            
+            if (updatedStation) {
+                console.log('Updated Katugastota station coordinates');
+                console.log(`New coordinates: ${updatedStation.location.coordinates.latitude}, ${updatedStation.location.coordinates.longitude}`);
+                createdStations = [updatedStation];
+            } else {
+                console.log('Katugastota station not found, creating new stations...');
+                // Create new stations if Katugastota doesn't exist
+                createdStations = await CompostingStation.insertMany(compostingStations);
+                console.log(`Created ${createdStations.length} composting stations in Kandy`);
+            }
+        }
 
         // Display created stations
-        createdStations.forEach((station, index) => {
-            console.log(`${index + 1}. ${station.name} - ${station.location.area}`);
-            console.log(`   Address: ${station.location.address}`);
-            console.log(`   Coordinates: ${station.location.coordinates.latitude}, ${station.location.coordinates.longitude}`);
-            console.log(`   Capacity: ${station.capacity} kg`);
-            console.log(`   Hours: ${station.operatingHours.open} - ${station.operatingHours.close}`);
-            console.log(`   Facilities: ${station.facilities.join(', ')}`);
-            console.log('');
-        });
+        if (createdStations.length > 0) {
+            createdStations.forEach((station, index) => {
+                console.log(`${index + 1}. ${station.name} - ${station.location.area}`);
+                console.log(`   Address: ${station.location.address}`);
+                console.log(`   Coordinates: ${station.location.coordinates.latitude}, ${station.location.coordinates.longitude}`);
+                console.log(`   Capacity: ${station.capacity} kg`);
+                console.log(`   Hours: ${station.operatingHours.open} - ${station.operatingHours.close}`);
+                console.log(`   Facilities: ${station.facilities.join(', ')}`);
+                console.log('');
+            });
+        }
 
         console.log('Composting stations setup completed successfully!');
     } catch (error) {

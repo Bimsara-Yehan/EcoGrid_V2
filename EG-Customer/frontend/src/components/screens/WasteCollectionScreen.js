@@ -185,9 +185,9 @@ const WasteCollectionScreen = () => {
       <div className="mb-8">
         <h1 className={`text-2xl sm:text-3xl font-bold flex items-center gap-3 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
           <Trash2 className={`h-6 w-6 sm:h-8 sm:w-8 ${isDarkMode ? 'text-green-400' : 'text-green-600'}`} />
-          <span className="truncate">Weekly Waste Collection Schedule</span>
+          <span className="truncate">{getString('waste_collection_title')}</span>
         </h1>
-        <p className={`mt-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Fixed weekly schedule - same waste type collected every week on the same day</p>
+        <p className={`mt-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{getString('collection_overview_desc')}</p>
         
         {/* Collection Status Info */}
         <div className={`mt-4 p-4 rounded-lg ${isDarkMode ? 'bg-blue-900/20 border border-blue-800' : 'bg-blue-50 border border-blue-200'}`}>
@@ -196,15 +196,15 @@ const WasteCollectionScreen = () => {
               <AlertCircle className={`h-5 w-5 mt-0.5 ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`} />
             </div>
             <div>
-              <h3 className={`text-sm font-medium mb-1 ${isDarkMode ? 'text-blue-300' : 'text-blue-900'}`}>Collection Status System</h3>
+              <h3 className={`text-sm font-medium mb-1 ${isDarkMode ? 'text-blue-300' : 'text-blue-900'}`}>{getString('collection_status_system')}</h3>
               <p className={`text-sm ${isDarkMode ? 'text-blue-200' : 'text-blue-700'}`}>
-                Collection status is updated in real-time by truck drivers. Status resets to "Pending" at the start of each week.
+                {getString('collection_status_desc')}
                 <br />
-                <span className="font-medium">Status Legend:</span> 
-                <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ml-2 mr-1 ${isDarkMode ? 'bg-yellow-900/30 text-yellow-300 border border-yellow-800/50' : 'bg-yellow-100 text-yellow-800'}`}>Pending</span>
-                <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium mr-1 ${isDarkMode ? 'bg-blue-900/30 text-blue-300 border border-blue-800/50' : 'bg-blue-100 text-blue-800'}`}>In Progress</span>
-                <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium mr-1 ${isDarkMode ? 'bg-green-900/30 text-green-300 border border-green-800/50' : 'bg-green-100 text-green-800'}`}>Completed</span>
-                <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${isDarkMode ? 'bg-red-900/30 text-red-300 border border-red-800/50' : 'bg-red-100 text-red-800'}`}>Missed</span>
+                <span className="font-medium">{getString('status_legend')}</span> 
+                <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ml-2 mr-1 ${isDarkMode ? 'bg-yellow-900/30 text-yellow-300 border border-yellow-800/50' : 'bg-yellow-100 text-yellow-800'}`}>{getString('pending')}</span>
+                <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium mr-1 ${isDarkMode ? 'bg-blue-900/30 text-blue-300 border border-blue-800/50' : 'bg-blue-100 text-blue-800'}`}>{getString('in_progress')}</span>
+                <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium mr-1 ${isDarkMode ? 'bg-green-900/30 text-green-300 border border-green-800/50' : 'bg-green-100 text-green-800'}`}>{getString('completed')}</span>
+                <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${isDarkMode ? 'bg-red-900/30 text-red-300 border border-red-800/50' : 'bg-red-100 text-red-800'}`}>{getString('missed')}</span>
               </p>
             </div>
           </div>
@@ -220,7 +220,7 @@ const WasteCollectionScreen = () => {
             </div>
             <div>
               <p className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{weeklySchedule.length}</p>
-              <p className={`text-sm opacity-75 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Weekly Schedule</p>
+              <p className={`text-sm opacity-75 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{getString('weekly_schedule')}</p>
             </div>
           </div>
         </div>
@@ -232,7 +232,7 @@ const WasteCollectionScreen = () => {
             </div>
             <div>
               <p className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{weeklySchedule.filter(s => s.collectionStatus === 'completed').length}</p>
-              <p className={`text-sm opacity-75 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Completed Today</p>
+              <p className={`text-sm opacity-75 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{getString('completed_today')}</p>
             </div>
           </div>
         </div>
@@ -244,7 +244,7 @@ const WasteCollectionScreen = () => {
             </div>
             <div>
               <p className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{wasteTypes.length - 1}</p>
-              <p className={`text-sm opacity-75 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Waste Types</p>
+              <p className={`text-sm opacity-75 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{getString('waste_types')}</p>
             </div>
           </div>
         </div>

@@ -334,9 +334,16 @@ router.put('/image', auth, upload.single('profileImage'), async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        // Update profile image URL
+        // Update profile image URL in User model
         user.profileImageUrl = `/uploads/${req.file.filename}`;
         await user.save();
+
+        // Also update profile image URL in Customer model
+        const customer = await Customer.findOne({ userId: user._id });
+        if (customer) {
+            customer.profileImageUrl = `/uploads/${req.file.filename}`;
+            await customer.save();
+        }
 
         res.json({ 
             message: 'Profile image updated successfully',

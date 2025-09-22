@@ -71,8 +71,8 @@ const compostingStations = [
         location: {
             address: "45 Katugastota Road, Katugastota 20800",
             coordinates: {
-                latitude: 7.3156,
-                longitude: 80.6167
+                latitude: 7.28,
+                longitude: 80.62
             },
             area: "Katugastota"
         },

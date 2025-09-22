@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -16,7 +16,10 @@ import {
   LogOut,
   AlertTriangle,
   Settings,
-  CheckSquare
+  CheckSquare,
+  Menu,
+  X,
+  Users
 } from 'lucide-react';
 
 const Layout = ({ children }) => {
@@ -25,6 +28,8 @@ const Layout = ({ children }) => {
   const { logout, user } = useAuth();
   const { isDarkMode, toggleTheme } = useTheme();
   const { currentLanguage, languages, changeLanguage, getString } = useLanguage();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const navigationItems = [
     { path: '/dashboard', icon: Home, label: 'nav_dashboard' },
@@ -32,12 +37,22 @@ const Layout = ({ children }) => {
     { path: '/recycling-guide', icon: Info, label: 'nav_composting' },
     { path: '/tasks', icon: CheckSquare, label: 'nav_tasks' },
     { path: '/report', icon: AlertTriangle, label: 'nav_report' },
+    { path: '/about-us', icon: Users, label: 'nav_about_us' },
     { path: '/profile', icon: User, label: 'nav_profile' }
   ];
 
   const handleLogout = () => {
+    setShowLogoutConfirm(true);
+  };
+
+  const confirmLogout = () => {
     logout();
     navigate('/login');
+    setShowLogoutConfirm(false);
+  };
+
+  const cancelLogout = () => {
+    setShowLogoutConfirm(false);
   };
 
   const handleLanguageChange = (languageCode) => {
@@ -50,6 +65,14 @@ const Layout = ({ children }) => {
       <header className={`${isDarkMode ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'} shadow-sm border-b ${isDarkMode ? 'border-gray-800' : 'border-gray-200'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            >
+              {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+
             {/* Logo */}
             <div className="flex items-center">
               <div className="flex-shrink-0">
@@ -61,7 +84,7 @@ const Layout = ({ children }) => {
             </div>
 
             {/* Header Actions */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 sm:space-x-4">
               {/* Language Selector */}
               <div className="relative">
                 <button
@@ -116,8 +139,22 @@ const Layout = ({ children }) => {
 
       {/* Main Content */}
       <div className="flex">
+        {/* Mobile Overlay */}
+        {isMobileMenuOpen && (
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+        )}
+
         {/* Sidebar Navigation */}
-        <nav className={`w-64 ${isDarkMode ? 'bg-gray-900' : 'bg-white'} shadow-sm min-h-screen border-r ${isDarkMode ? 'border-gray-800' : 'border-gray-100'}`}>
+        <nav className={`
+          ${isDarkMode ? 'bg-gray-900' : 'bg-white'} 
+          shadow-sm min-h-screen border-r ${isDarkMode ? 'border-gray-800' : 'border-gray-100'}
+          fixed lg:static inset-y-0 left-0 z-50
+          w-64 transform transition-transform duration-300 ease-in-out
+          ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+        `}>
           <div className="p-4">
             <ul className="space-y-2">
               {navigationItems.map((item) => {
@@ -127,7 +164,10 @@ const Layout = ({ children }) => {
                 return (
                   <li key={item.path}>
                     <button
-                      onClick={() => navigate(item.path)}
+                      onClick={() => {
+                        navigate(item.path);
+                        setIsMobileMenuOpen(false);
+                      }}
                       className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors border ${
                         isActive
                           ? 'bg-green-600 text-white border-green-600'
@@ -147,13 +187,54 @@ const Layout = ({ children }) => {
         </nav>
 
         {/* Page Content */}
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-4 sm:p-6 lg:ml-0">
           {children}
         </main>
       </div>
       
       {/* Chatbot */}
       <Chatbot />
+
+      {/* Logout Confirmation Dialog */}
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className={`bg-white rounded-lg p-6 max-w-md w-full mx-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+            <div className="flex items-center mb-4">
+              <div className="flex-shrink-0">
+                <LogOut className={`h-6 w-6 ${isDarkMode ? 'text-red-400' : 'text-red-600'}`} />
+              </div>
+              <div className="ml-3">
+                <h3 className={`text-lg font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                  Confirm Logout
+                </h3>
+              </div>
+            </div>
+            <div className="mb-6">
+              <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                Are you sure you want to logout? You will need to sign in again to access your account.
+              </p>
+            </div>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={cancelLogout}
+                className={`px-4 py-2 text-sm font-medium rounded-md border ${
+                  isDarkMode 
+                    ? 'border-gray-600 text-gray-300 hover:bg-gray-700' 
+                    : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500`}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmLogout}
+                className="px-4 py-2 text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

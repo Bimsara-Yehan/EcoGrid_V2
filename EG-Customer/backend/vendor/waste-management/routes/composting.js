@@ -9,7 +9,7 @@ const auth = require('../middleware/auth');
 // @access  Public
 router.get('/stations', async (req, res) => {
     try {
-        const { lat, lng, maxDistance = 10, status, area } = req.query;
+        const { lat, lng, maxDistance = 100, status, area } = req.query;
         
         let query = { isActive: true };
         

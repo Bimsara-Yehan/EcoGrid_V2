@@ -15,6 +15,31 @@ import toast from 'react-hot-toast';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
+// Add CSS for invalid location marker and map overlays
+const invalidMarkerStyle = `
+  .invalid-location-marker {
+    filter: hue-rotate(0deg) saturate(2) brightness(0.7);
+  }
+  
+  .kandy-district-overlay {
+    stroke-dasharray: 5, 5;
+    animation: dash 20s linear infinite;
+  }
+  
+  @keyframes dash {
+    to {
+      stroke-dashoffset: -100;
+    }
+  }
+`;
+
+// Inject the style
+if (typeof document !== 'undefined') {
+  const style = document.createElement('style');
+  style.textContent = invalidMarkerStyle;
+  document.head.appendChild(style);
+}
+
 // Fix Leaflet default marker icons
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -23,9 +48,38 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
 });
 
-// Kandy bounds
+// Kandy District precise boundaries
+const KANDY_DISTRICT_BOUNDARY = [
+  [7.15, 80.45],  // Southwest corner
+  [7.15, 80.75],  // Southeast corner
+  [7.35, 80.75],  // Northeast corner
+  [7.35, 80.45],  // Northwest corner
+  [7.15, 80.45]   // Close the polygon
+];
+
+// Kandy bounds for map display
 const KANDY_BOUNDS = L.latLngBounds(L.latLng(7.0, 80.0), L.latLng(7.5, 81.0));
 const KANDY_CITY_BOUNDS = L.latLngBounds(L.latLng(7.23, 80.55), L.latLng(7.35, 80.70));
+
+// Point-in-polygon algorithm for Kandy District validation
+const isPointInKandyDistrict = (lat, lng) => {
+  const x = lng;
+  const y = lat;
+  let inside = false;
+  
+  for (let i = 0, j = KANDY_DISTRICT_BOUNDARY.length - 1; i < KANDY_DISTRICT_BOUNDARY.length; j = i++) {
+    const xi = KANDY_DISTRICT_BOUNDARY[i][1];
+    const yi = KANDY_DISTRICT_BOUNDARY[i][0];
+    const xj = KANDY_DISTRICT_BOUNDARY[j][1];
+    const yj = KANDY_DISTRICT_BOUNDARY[j][0];
+    
+    if (((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) {
+      inside = !inside;
+    }
+  }
+  
+  return inside;
+};
 
 const ReportScreen = () => {
   const navigate = useNavigate();
@@ -48,6 +102,8 @@ const ReportScreen = () => {
   const [errors, setErrors] = useState({});
   const [mapCenter, setMapCenter] = useState({ lat: 7.2906, lng: 80.6337 });
   const [selectedLocation, setSelectedLocation] = useState({ lat: 7.2906, lng: 80.6337 });
+  const [locationError, setLocationError] = useState('');
+  const [isLocationValid, setIsLocationValid] = useState(true);
   
   // No file input; enforce instant camera capture only
   const mapRef = useRef(null);
@@ -80,6 +136,24 @@ const ReportScreen = () => {
 
     map.fitBounds(KANDY_CITY_BOUNDS, { padding: [20, 20] });
 
+    // Add Kandy District overlay to show valid reporting area
+    const kandyDistrictPolygon = L.polygon(KANDY_DISTRICT_BOUNDARY, {
+      color: '#10b981', // Green color
+      weight: 2,
+      opacity: 0.8,
+      fillColor: '#10b981',
+      fillOpacity: 0.2,
+      className: 'kandy-district-overlay'
+    }).addTo(map);
+
+    // Add a popup to explain the overlay
+    kandyDistrictPolygon.bindPopup(`
+      <div style="text-align: center; font-family: Arial, sans-serif;">
+        <strong style="color: #10b981;">📍 Valid Reporting Area</strong><br>
+        <small style="color: #6b7280;">You can report illegal dumping within this green area</small>
+      </div>
+    `);
+
     // Draggable marker
     const marker = L.marker([selectedLocation.lat, selectedLocation.lng], {
       draggable: true,
@@ -90,16 +164,82 @@ const ReportScreen = () => {
     map.on('click', async (e) => {
       const lat = e.latlng.lat;
       const lng = e.latlng.lng;
-      setSelectedLocation({ lat, lng });
-      marker.setLatLng([lat, lng]);
-      await reverseGeocode(lat, lng);
+      
+      // Validate location
+      const isValid = isPointInKandyDistrict(lat, lng);
+      setIsLocationValid(isValid);
+      
+      if (isValid) {
+        setLocationError('');
+        setSelectedLocation({ lat, lng });
+        marker.setLatLng([lat, lng]);
+        await reverseGeocode(lat, lng);
+      } else {
+        setLocationError('Location not in our municipal area');
+        // Don't update location if invalid
+      }
+    });
+
+    // Drag start handler for real-time validation
+    marker.on('dragstart', (e) => {
+      // Clear any previous error during drag
+      setLocationError('');
+    });
+
+    // Drag handler for real-time validation
+    marker.on('drag', (e) => {
+      const { lat, lng } = e.target.getLatLng();
+      const isValid = isPointInKandyDistrict(lat, lng);
+      
+      if (isValid) {
+        setLocationError('');
+        marker.setIcon(L.icon({
+          iconUrl: require('leaflet/dist/images/marker-icon.png'),
+          iconSize: [25, 41],
+          iconAnchor: [12, 41],
+          popupAnchor: [1, -34],
+          shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+          shadowSize: [41, 41]
+        }));
+      } else {
+        setLocationError('Location not in our municipal area');
+        // Change marker to red when outside district
+        marker.setIcon(L.icon({
+          iconUrl: require('leaflet/dist/images/marker-icon.png'),
+          iconSize: [25, 41],
+          iconAnchor: [12, 41],
+          popupAnchor: [1, -34],
+          shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+          shadowSize: [41, 41],
+          className: 'invalid-location-marker'
+        }));
+      }
     });
 
     // Drag end handler
     marker.on('dragend', async (e) => {
       const { lat, lng } = e.target.getLatLng();
-      setSelectedLocation({ lat, lng });
-      await reverseGeocode(lat, lng);
+      const isValid = isPointInKandyDistrict(lat, lng);
+      setIsLocationValid(isValid);
+      
+      if (isValid) {
+        setLocationError('');
+        setSelectedLocation({ lat, lng });
+        await reverseGeocode(lat, lng);
+        // Reset marker to normal
+        marker.setIcon(L.icon({
+          iconUrl: require('leaflet/dist/images/marker-icon.png'),
+          iconSize: [25, 41],
+          iconAnchor: [12, 41],
+          popupAnchor: [1, -34],
+          shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+          shadowSize: [41, 41]
+        }));
+      } else {
+        setLocationError('Location not in our municipal area');
+        // Snap back to last valid location or center
+        marker.setLatLng([selectedLocation.lat, selectedLocation.lng]);
+      }
     });
 
     leafletMapRef.current = map;
@@ -244,6 +384,7 @@ const ReportScreen = () => {
     const newErrors = {};
     if (!formData.landmarks.trim()) newErrors.landmarks = 'Landmarks are required';
     if (!selectedImage) newErrors.image = 'Please upload an image of the illegal dumping';
+    if (!isLocationValid) newErrors.location = 'Please select a location within Kandy District';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -320,6 +461,22 @@ const ReportScreen = () => {
               <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
                 {getString('clickOnMap')}
               </p>
+              
+              {/* Map Legend */}
+              <div className="mt-3 flex flex-wrap gap-4 text-xs">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 bg-green-500 rounded-sm opacity-20"></div>
+                  <span className={isDarkMode ? 'text-gray-300' : 'text-gray-600'}>Valid reporting area</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                  <span className={isDarkMode ? 'text-gray-300' : 'text-gray-600'}>Your pin location</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                  <span className={isDarkMode ? 'text-gray-300' : 'text-gray-600'}>Invalid location</span>
+                </div>
+              </div>
             </div>
             <div 
               ref={mapRef}
@@ -331,6 +488,15 @@ const ReportScreen = () => {
                 <MapPin className="h-4 w-4" />
                 <span>{formData.location.address}</span>
               </div>
+              {/* Location validation error */}
+              {locationError && (
+                <div className="mt-2 p-2 bg-red-100 border border-red-300 rounded-md">
+                  <div className="flex items-center gap-2 text-sm text-red-600">
+                    <AlertTriangle className="h-4 w-4" />
+                    <span>{locationError}</span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 

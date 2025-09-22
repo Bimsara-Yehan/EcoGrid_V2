@@ -16,6 +16,7 @@ const chatbotRoutes = require('./routes/chatbot');
 const compostingRoutes = require('./routes/composting');
 const reportingRoutes = require('./routes/reporting');
 const specialRequestRoutes = require('./routes/specialRequests');
+const communityEventRoutes = require('./routes/communityEvents');
 
 // Load environment variables
 dotenv.config();
@@ -92,6 +93,7 @@ app.use('/api/chatbot', chatbotRoutes);
 app.use('/api/composting', compostingRoutes);
 app.use('/api/reporting', reportingRoutes);
 app.use('/api/special-requests', specialRequestRoutes);
+app.use('/api/community-events', communityEventRoutes);
 
 // Serve static assets in production
 if (process.env.NODE_ENV === 'production') {

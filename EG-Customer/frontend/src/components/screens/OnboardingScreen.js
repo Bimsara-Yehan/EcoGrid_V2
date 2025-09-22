@@ -39,7 +39,7 @@ const OnboardingScreen = () => {
           {/* Regular User Access */}
           <div className="text-center">
             <a
-              href="/signup"
+              href="/login"
               className="inline-flex items-center px-6 py-3 rounded-lg bg-green-600 text-white font-medium hover:bg-green-700 transition-colors shadow-sm"
             >
               {getString('get_started')} - Regular User
