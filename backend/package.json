@@ -2,7 +2,6 @@
   "name": "ecogrid-backend",
   "version": "1.0.0",
   "description": "EcoGrid API (Express + MongoDB + Firebase Admin)",
-  "type": "module",
   "main": "server.js",
   "scripts": {
     "dev": "nodemon server.js",

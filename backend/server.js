@@ -1,47 +1,42 @@
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
-import { connectDB } from "./config/db.js";
-import stopsRoutes from "./routes/stopsRoutes.js";  
-import reportsRoutes from "./routes/reportsRoutes.js";
-import pickupsRoutes from "./routes/pickupsRoutes.js";
-import dropoffsRoutes from "./routes/dropoffsRoutes.js";
-import schedulerRoutes from "./routes/schedulerRoutes.js";
-import schedulerReadRoutes from "./routes/schedulerReadRoutes.js";
-import { seedSchedulerData } from "./seed/seedSchedulerData.js";
+// app.js
+require('dotenv').config(); // load .env
 
-
-
-dotenv.config();
+const express = require("express");
+const mongoose = require("mongoose");
+const cors = require("cors");
+const router = require("./routes/ZoneRoute");
+const SubRoute = require("./routes/SubRoute");
+const CustomerRoute = require("./routes/CustomerRoute");
 
 const app = express();
+
+// middleware
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json({ limit: "15mb" }));
 
-await connectDB();
-await seedSchedulerData();
+// Namespace API to avoid clashing with frontend routes when refreshing
+app.use("/api/Zones", router);
+app.use("/api/subscriptions", SubRoute);
+app.use("/api/customers", CustomerRoute);
 
-app.use((req, res, next) => {
-  console.log("⇢", req.method, req.url);
-  next();
-});
-
-app.get("/api/health", (req, res) => res.json({ ok: true }));
-
-app.use("/api/stops", stopsRoutes);
-
-app.use("/api/reports", reportsRoutes);
-
-app.use("/api/pickups", pickupsRoutes);
-
-app.use("/api/dropoffs", dropoffsRoutes);
-
-
-
-app.use("/api/scheduler", schedulerRoutes);
-app.use("/api/scheduler", schedulerReadRoutes);
-
+// Build MONGO_URI either from full MONGO_URI or from parts
+const MONGO_URI = process.env.MONGO_URI || (() => {
+  const user = process.env.MONGO_USER;
+  const pass = process.env.MONGO_PASS ? encodeURIComponent(process.env.MONGO_PASS) : "";
+  const cluster = process.env.MONGO_CLUSTER;
+  const db = process.env.MONGO_DB;
+  return `mongodb+srv://${user}:${pass}@${cluster}/${db}?retryWrites=true&w=majority`;
+})();
 
 const PORT = process.env.PORT || 5000;
-const HOST = process.env.HOST || "0.0.0.0";
-app.listen(PORT, HOST, () => console.log(`🚀 API listening on http://${HOST}:${PORT}`));
+
+// Connect and then start server
+mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => {
+    console.log("Connected to MongoDB");
+    app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
+  })
+  .catch((err) => {
+    console.error("MongoDB connection error:", err);
+    process.exit(1);
+  });
