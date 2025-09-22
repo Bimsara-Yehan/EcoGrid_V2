@@ -1,5 +1,6 @@
 import React from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
+import { logout as doLogout } from "../services/auth";
 
 function QuickStartRouteButton() {
   const navigate = useNavigate();
@@ -124,6 +125,26 @@ const pageTitle = titles[pathname] ?? "EcoGrid";
               <span className="w-2.5 h-2.5 rounded-full bg-green-500" aria-hidden></span>
               Online
             </span>
+
+            {/* Refresh */}
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 font-medium"
+              style={{ minHeight: 44 }}
+            >
+              Refresh
+            </button>
+
+            {/* Logout */}
+            <button
+              type="button"
+              onClick={() => { doLogout(); navigate("/login", { replace: true }); }}
+              className="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 font-medium"
+              style={{ minHeight: 44 }}
+            >
+              Logout
+            </button>
 
             {/* Driver avatar */}
             <button className="flex items-center gap-2 px-2 py-1 rounded-xl hover:bg-slate-50" aria-label="Open driver menu" style={{ minHeight: 44 }}>

@@ -122,12 +122,6 @@ export default function SchedulerPage() {
       <button className="text-sm px-2 py-1 rounded-full bg-slate-100" onClick={() => planningAnchor.current?.scrollIntoView({ behavior: "smooth" })}>Stops {Object.values(plan).reduce((n, arr) => n + (arr?.length || 0), 0)}</button>
       <button className="text-sm px-2 py-1 rounded-full bg-slate-100" onClick={() => incidentsAnchor.current?.scrollIntoView({ behavior: "smooth" })}>Incidents {incidents.length}</button>
       <button className="px-3 py-2 rounded-lg bg-slate-100" onClick={runSuggestFromToolbar}>Suggest routes</button>
-      <div className="hidden lg:flex items-center gap-2">
-        <button className="px-2.5 py-1.5 rounded-lg bg-white border border-slate-300" onClick={() => setClearSignal(s => s + 1)}>Clear</button>
-        <button className="px-2.5 py-1.5 rounded-lg bg-white border border-slate-300" onClick={() => setFitDriverSignal(s => s + 1)}>Fit driver</button>
-        <button className="px-2.5 py-1.5 rounded-lg bg-white border border-slate-300" onClick={() => setFitAllSignal(s => s + 1)}>Fit all</button>
-        <button className="px-2.5 py-1.5 rounded-lg bg-white border border-slate-300" onClick={() => setShowLegend(v => !v)}>{showLegend ? "Hide legend" : "Legend"}</button>
-      </div>
       <button className="px-3 py-2 rounded-lg bg-green-600 text-white font-semibold" onClick={() => setConfirmOpen(true)} disabled={!Object.values(plan).some(a => a.length)}>Publish</button>
       <button className="px-3 py-2 rounded-lg bg-slate-100" onClick={() => { logout(); navigate("/login", { replace: true }); }}>Logout</button>
     </div>
@@ -175,6 +169,25 @@ export default function SchedulerPage() {
   // hook up external control signals
   // note: these hooks don't render anything; they just react to state changes
   // they require access to map; we pass signals down to SchedulerMap as well
+
+  // Compute validation errors for modal display (non-blocking until confirm)
+  const validationErrors = React.useMemo(() => {
+    const errs: string[] = [];
+    const dt = new Date(serviceDate);
+    if (!serviceDate || isNaN(dt.getTime())) errs.push("Select a valid service date.");
+    const selectedDrivers = planningDrivers.filter(d => (plan[d.id] || []).length > 0);
+    for (const d of selectedDrivers) {
+      const arr = (plan[d.id] || []) as any[];
+      const maxStops = (driverConfig[d.id]?.maxStops ?? drivers.find(x => x.id === d.id)?.maxStops ?? 40) as number;
+      if (arr.length > maxStops) errs.push(`${d.name}: exceeds max stops (${arr.length}/${maxStops}).`);
+      const badCoords = arr.find(s => !Array.isArray((s as any).coords) || (s as any).coords.length < 2 || typeof (s as any).coords[0] !== "number" || typeof (s as any).coords[1] !== "number");
+      if (badCoords) errs.push(`${d.name}: a stop is missing valid coordinates.`);
+      const ids = arr.map(s => (s as any).id).filter(Boolean);
+      const dup = ids.find((id, idx) => ids.indexOf(id) !== idx);
+      if (dup) errs.push(`${d.name}: duplicate stop detected (${dup}).`);
+    }
+    return errs;
+  }, [serviceDate, planningDrivers, plan, driverConfig, drivers]);
 
   return (
     <SchedulerLayout toolbarLeft={toolbarLeft} toolbarRight={toolbarRight} chips={chips}>
@@ -302,6 +315,8 @@ export default function SchedulerPage() {
         open={confirmOpen}
         date={serviceDate}
         drivers={planningDrivers.map(d => ({ id: d.id, name: d.name, stops: (plan[d.id] || []).length }))}
+        errors={validationErrors}
+        confirmDisabled={validationErrors.length > 0}
         onClose={() => setConfirmOpen(false)}
         onConfirm={async () => {
           setConfirmOpen(false);
@@ -310,6 +325,32 @@ export default function SchedulerPage() {
             if (selectedDrivers.length === 0) {
               alert("Nothing to publish: no drivers with stops.");
               return;
+            }
+            // Validate service date
+            const dt = new Date(serviceDate);
+            if (!serviceDate || isNaN(dt.getTime())) {
+              alert("Please select a valid service date.");
+              return;
+            }
+            // Per-driver validations: max stops, coords presence, duplicates
+            for (const d of selectedDrivers) {
+              const arr = (plan[d.id] || []) as any[];
+              const maxStops = (driverConfig[d.id]?.maxStops ?? drivers.find(x => x.id === d.id)?.maxStops ?? 40) as number;
+              if (arr.length > maxStops) {
+                alert(`${d.name}: exceeds max stops (${arr.length}/${maxStops}).`);
+                return;
+              }
+              const badCoords = arr.find(s => !Array.isArray((s as any).coords) || (s as any).coords.length < 2 || typeof (s as any).coords[0] !== "number" || typeof (s as any).coords[1] !== "number");
+              if (badCoords) {
+                alert(`${d.name}: a stop is missing valid coordinates.`);
+                return;
+              }
+              const ids = arr.map(s => (s as any).id).filter(Boolean);
+              const dup = ids.find((id, idx) => ids.indexOf(id) !== idx);
+              if (dup) {
+                alert(`${d.name}: duplicate stop detected (${dup}). Remove duplicates and try again.`);
+                return;
+              }
             }
             const payload = {
               planId: `plan-${serviceDate}`,

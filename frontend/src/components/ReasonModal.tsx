@@ -10,6 +10,8 @@ export default function ReasonModal({
   title?: string;
 }) {
   const [reason, setReason] = useState("");
+  const minLen = 3;
+  const isValid = reason.trim().length >= minLen;
 
   if (!open) return null;
   return (
@@ -22,13 +24,19 @@ export default function ReasonModal({
           placeholder="e.g., Bin inaccessible / resident not home"
           value={reason}
           onChange={(e) => setReason(e.target.value)}
+          aria-invalid={!isValid}
+          aria-describedby="reason-help"
         />
+        <div id="reason-help" className="mt-1 text-xs" style={{ color: isValid ? "#64748b" : "#b91c1c" }}>
+          {isValid ? "Provide a brief reason (min 3 characters)." : "Reason is required (min 3 characters)."}
+        </div>
         <div className="mt-4 flex gap-2 justify-end">
           <button onClick={onClose} className="px-4 py-2 rounded-xl bg-slate-100">Cancel</button>
           <button
-            onClick={() => { onSubmit(reason.trim()); setReason(""); }}
+            disabled={!isValid}
+            onClick={() => { if (!isValid) return; onSubmit(reason.trim()); setReason(""); }}
             className="px-4 py-2 rounded-xl text-white"
-            style={{ backgroundColor: "var(--primary)" }}
+            style={{ backgroundColor: isValid ? "var(--primary)" : "#cbd5e1", cursor: isValid ? "pointer" : "not-allowed" }}
           >
             Save
           </button>

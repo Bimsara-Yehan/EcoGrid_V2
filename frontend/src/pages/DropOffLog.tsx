@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import Layout from "../components/Layout";
 import { enqueue, flushQueue } from "../lib/offlineQueue";
+import { createDropoff } from "../services/dropoffs";
+import { getToken } from "../services/auth";
 
 export default function DropOffLogPage() {
   const [facility, setFacility] = useState("");
@@ -8,35 +10,48 @@ export default function DropOffLogPage() {
   const [time, setTime] = useState(() => new Date().toISOString().slice(0, 16)); // yyyy-mm-ddThh:mm
   const [note, setNote] = useState("");
   const [status, setStatus] = useState<string>("");
+  const [errors, setErrors] = useState<{ facility?: string; weightKg?: string; time?: string }>({});
+
+  function validate(): boolean {
+    const errs: { facility?: string; weightKg?: string; time?: string } = {};
+    if (!facility.trim()) errs.facility = "Facility is required";
+    const w = typeof weightKg === "number" ? weightKg : Number(weightKg);
+    if (!Number.isFinite(w) || w <= 0) errs.weightKg = "Enter a valid weight (> 0)";
+    if (!time) errs.time = "Time is required";
+    try {
+      const dt = new Date(time);
+      if (isNaN(dt.getTime())) errs.time = "Enter a valid date/time";
+      else if (dt.getTime() > Date.now() + 60_000) errs.time = "Time cannot be in the future";
+    } catch {}
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+  }
 
   async function submit() {
-    const payload = { facility, weightKg: Number(weightKg), time, note };
-    const req = {
-      id: String(Date.now()),
-      url: "/api/dropoffs",   // your backend route later
-      method: "POST" as const,
-      body: payload
-    };
+    setStatus("");
+    if (!validate()) return;
+    const payload = { facility: facility.trim(), weightKg: Number(weightKg), time: new Date(time).toISOString(), notes: note.trim() || undefined };
 
-    // If online, try now; else enqueue
-    if (navigator.onLine) { // online/offline is a boolean provided by the browser  :contentReference[oaicite:10]{index=10}
+    // Try online first via service (adds base URL + Authorization)
+    if (navigator.onLine) {
       try {
-        const res = await fetch(req.url, {
-          method: req.method,
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(req.body)
-        });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        await createDropoff(payload);
         setStatus("Submitted ✔");
         return;
-      } catch {
-        // fall through to enqueue
+      } catch (e) {
+        // fall back to offline queue
       }
     }
 
-    // Enqueue for later and inform the driver
-    enqueue(req);
-    setStatus("Saved offline. Will send when online.");
+    // Enqueue for later with absolute URL and auth header
+    try {
+      const token = getToken();
+      const url = `${window.location.origin}/api/dropoffs`;
+      enqueue({ id: String(Date.now()), url, method: "POST", body: payload, headers: token ? { Authorization: `Bearer ${token}` } : undefined });
+      setStatus("Saved offline. Will send when online.");
+    } catch {
+      setStatus("Failed to save offline");
+    }
   }
 
   return (
@@ -49,7 +64,9 @@ export default function DropOffLogPage() {
           <label className="grid gap-1">
             <span className="text-sm font-medium">Facility</span>
             <input value={facility} onChange={e => setFacility(e.target.value)}
+                   aria-invalid={Boolean(errors.facility)}
                    className="rounded-xl border px-3 py-3" placeholder="Central Recycling Center" />
+            {errors.facility && <span className="text-xs" style={{ color: "#b91c1c" }}>{errors.facility}</span>}
           </label>
 
           <label className="grid gap-1">
@@ -57,12 +74,15 @@ export default function DropOffLogPage() {
             <input type="number" min={0} step="0.1" value={weightKg}
                    onChange={e => setWeightKg(e.target.value === "" ? "" : Number(e.target.value))}
                    className="rounded-xl border px-3 py-3" placeholder="e.g., 450.0" />
+            {errors.weightKg && <span className="text-xs" style={{ color: "#b91c1c" }}>{errors.weightKg}</span>}
           </label>
 
           <label className="grid gap-1">
             <span className="text-sm font-medium">Time</span>
             <input type="datetime-local" value={time} onChange={e => setTime(e.target.value)}
+                   aria-invalid={Boolean(errors.time)}
                    className="rounded-xl border px-3 py-3" />
+            {errors.time && <span className="text-xs" style={{ color: "#b91c1c" }}>{errors.time}</span>}
           </label>
 
           <label className="grid gap-1">

@@ -74,9 +74,14 @@ export default function StopCard({
 
   async function submitWithReason(action: "missed"|"skipped", reason: string) {
     try {
+      const trimmed = (reason || "").trim();
+      if (trimmed.length < 3) {
+        toast.push("Reason is required (min 3 characters)");
+        return;
+      }
       setPendingAction(action);
       const { lat, lng } = await getGPS();
-      await createPickup({ stopId: stop.id, action, reason, lat, lng });
+      await createPickup({ stopId: stop.id, action, reason: trimmed, lat, lng });
       toast.push(`Marked ${action}`);
       setLocalStatus(action);
       onAfterAction && onAfterAction(stop.id, action);
