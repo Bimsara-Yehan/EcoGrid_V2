@@ -50,8 +50,12 @@ const LeaveRequestList = () => {
     try {
       setLoading(true);
       const response = await axios.get('/api/leaverequests');
-      setLeaveRequests(response.data.data);
-      setFilteredRequests(response.data.data);
+      console.log('Leave requests response:', response.data);
+      
+      // Handle different response formats
+      const requests = response.data.data || response.data || [];
+      setLeaveRequests(requests);
+      setFilteredRequests(requests);
       setError('');
     } catch (err) {
       setError('Failed to fetch leave requests');
@@ -67,7 +71,10 @@ const LeaveRequestList = () => {
     if (window.confirm('Are you sure you want to delete this leave request?')) {
       try {
         await axios.delete(`/api/leaverequests/${id}`);
-        setLeaveRequests(leaveRequests.filter(request => request._id !== id));
+        // Update both states to keep them in sync
+        const updatedRequests = leaveRequests.filter(request => request._id !== id);
+        setLeaveRequests(updatedRequests);
+        setFilteredRequests(updatedRequests);
         alert('Leave request deleted successfully!');
       } catch (err) {
         alert('Failed to delete leave request');
@@ -86,11 +93,14 @@ const LeaveRequestList = () => {
         adminComments: comments || 'Leave request approved'
       });
       
-      setLeaveRequests(prev => prev.map(request => 
+      // Update both states to keep them in sync
+      const updatedRequests = leaveRequests.map(request => 
         request._id === id 
           ? { ...request, status: 'approved', approvedRejectedDate: new Date() }
           : request
-      ));
+      );
+      setLeaveRequests(updatedRequests);
+      setFilteredRequests(updatedRequests);
       
       alert('Leave request approved successfully!');
     } catch (err) {
@@ -112,11 +122,14 @@ const LeaveRequestList = () => {
         adminComments: comments.trim()
       });
       
-      setLeaveRequests(prev => prev.map(request => 
+      // Update both states to keep them in sync
+      const updatedRequests = leaveRequests.map(request => 
         request._id === id 
           ? { ...request, status: 'rejected', approvedRejectedDate: new Date() }
           : request
-      ));
+      );
+      setLeaveRequests(updatedRequests);
+      setFilteredRequests(updatedRequests);
       
       alert('Leave request rejected successfully!');
     } catch (err) {

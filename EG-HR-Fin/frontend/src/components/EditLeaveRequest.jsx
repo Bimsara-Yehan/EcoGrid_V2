@@ -44,7 +44,11 @@ const EditLeaveRequest = () => {
   const fetchStaffMembers = async () => {
     try {
       const response = await axios.get('/api/staff');
-      setStaffMembers(response.data.data);
+      console.log('Staff members response:', response.data);
+      
+      // Handle different response formats
+      const staff = response.data.data || response.data || [];
+      setStaffMembers(staff);
     } catch (err) {
       console.error('Error fetching staff members:', err);
       setError('Failed to load staff members');
@@ -55,16 +59,25 @@ const EditLeaveRequest = () => {
     try {
       setLoading(true);
       const response = await axios.get(`/api/leaverequests/${id}`);
-      const request = response.data.data;
+      console.log('Leave request response:', response.data);
+      
+      const request = response.data.data || response.data;
+      
+      // Handle date formatting safely
+      const formatDate = (dateString) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        return date.toISOString().split('T')[0];
+      };
       
       setFormData({
-        staffID: request.staffID._id || request.staffID,
-        leaveType: request.leaveType,
-        startDate: request.startDate.split('T')[0],
-        endDate: request.endDate.split('T')[0],
-        totalDays: request.totalDays.toString(),
-        reason: request.reason,
-        status: request.status
+        staffID: request.staffID?._id || request.staffID || '',
+        leaveType: request.leaveType || '',
+        startDate: formatDate(request.startDate),
+        endDate: formatDate(request.endDate),
+        totalDays: request.totalDays?.toString() || '',
+        reason: request.reason || '',
+        status: request.status || 'Pending'
       });
     } catch (err) {
       setError('Failed to fetch leave request data');

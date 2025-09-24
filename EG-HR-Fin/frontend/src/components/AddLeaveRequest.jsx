@@ -39,7 +39,11 @@ const AddLeaveRequest = () => {
   const fetchStaffMembers = async () => {
     try {
       const response = await axios.get('/api/staff');
-      setStaffMembers(response.data.data);
+      console.log('Staff members response:', response.data);
+      
+      // Handle different response formats
+      const staff = response.data.data || response.data || [];
+      setStaffMembers(staff);
     } catch (err) {
       console.error('Error fetching staff members:', err);
       setError('Failed to load staff members');
